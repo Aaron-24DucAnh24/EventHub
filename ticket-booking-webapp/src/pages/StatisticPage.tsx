@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
 const StatisticPage = () => {
-  return (
-    <div className='flex justify-center items-center'>StatisticPage</div>
-  )
-}
+  return <div className="flex justify-center items-center">StatisticPage</div>;
+};
 
-export default StatisticPage
+export default StatisticPage;

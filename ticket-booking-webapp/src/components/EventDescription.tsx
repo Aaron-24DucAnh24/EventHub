@@ -8,7 +8,7 @@ import {
   DialogTitle,
   TextField,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { ISeatEvent } from "../Dto/ISeat";
 import { IEvent } from "../Dto/IEvent";
@@ -32,14 +32,15 @@ const theme = createTheme({
     },
   },
 });
+const PICKING = -1;
+const PICKED = 1;
 
 const expression: RegExp = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
 
 const EventDescription = ({ seatsList, setSeatsList, event }: Props) => {
-
   const navigate = useNavigate();
-  const [emailStore, setEmailStore] = useEmailStore(
-    (state) => [state.emailStore, state.setEmailStore],
+  const [setEmailStore] = useEmailStore(
+    (state) => [state.setEmailStore],
     shallow
   );
 
@@ -53,7 +54,6 @@ const EventDescription = ({ seatsList, setSeatsList, event }: Props) => {
   const [isSubmitInfo, setIsSubmitInfo] = useState<boolean>(false);
   const [code, setCode] = useState<string>("");
   const [invoiceId, setInvoiceId] = useState<string>("");
-
   //Form data
   const [fullName, setFullName] = useState<string>("");
   const [phoneNumber, setPhoneNumber] = useState<string>("");
@@ -84,7 +84,7 @@ const EventDescription = ({ seatsList, setSeatsList, event }: Props) => {
       setIsLoading(true);
       const config = {
         headers: {
-          'Content-Type': 'application/json-patch+json',
+          "Content-Type": "application/json-patch+json",
           "ngrok-skip-browser-warning": "true",
         },
       };
@@ -97,14 +97,13 @@ const EventDescription = ({ seatsList, setSeatsList, event }: Props) => {
         seatIds: seatsPicking.map((seat) => seat.seatId.toUpperCase()),
       };
       const response = await api.post("/Invoice", postData, config);
-      if(response) {
+      if (response) {
         setEmailStore(email);
       }
       setInvoiceId(response.data);
       setIsSubmitInfo(true);
       setOpenConfirmationCode(true);
       handleCloseInfo();
-      
     } catch (error) {
       console.log(error);
     } finally {
@@ -128,12 +127,12 @@ const EventDescription = ({ seatsList, setSeatsList, event }: Props) => {
       if (response && seatsList) {
         let seatsUpdate = [...seatsList];
         seatsUpdate.map((seat) => {
-          if (seat.seatStatus === -1) {
-            seat.seatStatus = 1;
+          if (seat.seatStatus === PICKING) {
+            seat.seatStatus = PICKED;
           }
         });
         setSeatsList(seatsUpdate);
-        navigate(`/my-booking/${email}`)
+        navigate(`/my-booking/${email}`);
       }
       handleCloseConfirmationCode();
     } catch (error) {
@@ -235,160 +234,152 @@ const EventDescription = ({ seatsList, setSeatsList, event }: Props) => {
               ) : (
                 ""
               )}
-
               <Dialog open={openInfo} onClose={handleCloseInfo}>
-                {isLoading ? (
-                  <div className="flex justify-center items-center">
-                    <CircularProgress />
-                    <p>Loading...</p>
-                  </div>
-                ) : (
-                  <div>
-                    <DialogTitle
-                      className="text-main"
-                      style={{ color: "#5669FF", fontSize: "24px" }}
-                    >
-                      Confirmation Payment
-                    </DialogTitle>
-                    <DialogContent
+                <div>
+                  <DialogTitle
+                    className="text-main"
+                    style={{ color: "#5669FF", fontSize: "24px" }}
+                  >
+                    Confirmation Payment
+                  </DialogTitle>
+                  <DialogContent
+                    style={{
+                      height: "100%",
+                      position: "relative",
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <DialogContentText>
+                      Please provide the required information for payment
+                      confirmation.
+                    </DialogContentText>
+                    <div
                       style={{
-                        height: "100%",
-                        position: "relative",
                         display: "flex",
-                        flexDirection: "column",
+                        justifyContent: "center",
+                        alignItems: "end",
                       }}
                     >
-                      <DialogContentText>
-                        Please provide the required information for payment
-                        confirmation.
-                      </DialogContentText>
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "end",
+                      <p style={{ flex: 2, margin: "0", fontSize: "18px" }}>
+                        Full name:{" "}
+                      </p>
+                      <TextField
+                        autoFocus
+                        margin="dense"
+                        id="name"
+                        label="Full name"
+                        type="text"
+                        fullWidth
+                        variant="standard"
+                        style={{ flex: 4, margin: "0" }}
+                        onChange={(e) => setFullName(e.target.value)}
+                      />
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "end",
+                        marginTop: "12px",
+                      }}
+                    >
+                      <p style={{ flex: 2, margin: "0", fontSize: "18px" }}>
+                        Phone number:{" "}
+                      </p>
+                      <TextField
+                        autoFocus
+                        margin="dense"
+                        id="phone"
+                        label="Phone number"
+                        type="number"
+                        fullWidth
+                        variant="standard"
+                        style={{ flex: 4, margin: "0" }}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                      />
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "end",
+                        marginTop: "12px",
+                      }}
+                    >
+                      <p style={{ flex: 2, margin: "0", fontSize: "18px" }}>
+                        Email:{" "}
+                      </p>
+                      <TextField
+                        autoFocus
+                        margin="dense"
+                        id="phone"
+                        label="Email"
+                        type="email"
+                        fullWidth
+                        variant="standard"
+                        style={{ flex: 4, margin: "0" }}
+                        onChange={(e) => setEmail(e.target.value)}
+                      />
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "end",
+                        marginTop: "12px",
+                      }}
+                    >
+                      <p style={{ flex: 2, margin: "0", fontSize: "18px" }}>
+                        Event name:{" "}
+                      </p>
+                      <TextField
+                        autoFocus
+                        margin="dense"
+                        id="phone"
+                        label="Event name"
+                        type="text"
+                        defaultValue={event.title}
+                        InputProps={{
+                          readOnly: true,
                         }}
-                      >
-                        <p style={{ flex: 2, margin: "0", fontSize: "18px" }}>
-                          Full name:{" "}
-                        </p>
-                        <TextField
-                          autoFocus
-                          margin="dense"
-                          id="name"
-                          label="Full name"
-                          type="text"
-                          fullWidth
-                          variant="standard"
-                          style={{ flex: 4, margin: "0" }}
-                          onChange={(e) => setFullName(e.target.value)}
-                        />
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "end",
-                          marginTop: "12px",
+                        fullWidth
+                        variant="standard"
+                        style={{ flex: 4, margin: "0" }}
+                      />
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "end",
+                        marginTop: "12px",
+                      }}
+                    >
+                      <p style={{ flex: 2, margin: "0", fontSize: "18px" }}>
+                        Seats:{" "}
+                      </p>
+                      <TextField
+                        autoFocus
+                        margin="dense"
+                        id="text"
+                        label="Seats"
+                        type="text"
+                        defaultValue={seatsNumber}
+                        InputProps={{
+                          readOnly: true,
                         }}
-                      >
-                        <p style={{ flex: 2, margin: "0", fontSize: "18px" }}>
-                          Phone number:{" "}
-                        </p>
-                        <TextField
-                          autoFocus
-                          margin="dense"
-                          id="phone"
-                          label="Phone number"
-                          type="number"
-                          fullWidth
-                          variant="standard"
-                          style={{ flex: 4, margin: "0" }}
-                          onChange={(e) => setPhoneNumber(e.target.value)}
-                        />
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "end",
-                          marginTop: "12px",
-                        }}
-                      >
-                        <p style={{ flex: 2, margin: "0", fontSize: "18px" }}>
-                          Email:{" "}
-                        </p>
-                        <TextField
-                          autoFocus
-                          margin="dense"
-                          id="phone"
-                          label="Email"
-                          type="email"
-                          fullWidth
-                          variant="standard"
-                          style={{ flex: 4, margin: "0" }}
-                          onChange={(e) => setEmail(e.target.value)}
-                        />
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "end",
-                          marginTop: "12px",
-                        }}
-                      >
-                        <p style={{ flex: 2, margin: "0", fontSize: "18px" }}>
-                          Event name:{" "}
-                        </p>
-                        <TextField
-                          autoFocus
-                          margin="dense"
-                          id="phone"
-                          label="Event name"
-                          type="text"
-                          defaultValue={event.title}
-                          InputProps={{
-                            readOnly: true,
-                          }}
-                          fullWidth
-                          variant="standard"
-                          style={{ flex: 4, margin: "0" }}
-                        />
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "end",
-                          marginTop: "12px",
-                        }}
-                      >
-                        <p style={{ flex: 2, margin: "0", fontSize: "18px" }}>
-                          Seats:{" "}
-                        </p>
-                        <TextField
-                          autoFocus
-                          margin="dense"
-                          id="text"
-                          label="Seats"
-                          type="text"
-                          defaultValue={seatsNumber}
-                          InputProps={{
-                            readOnly: true,
-                          }}
-                          fullWidth
-                          variant="standard"
-                          style={{ flex: 4, margin: "0" }}
-                        />
-                      </div>
-                    </DialogContent>
-                    <DialogActions>
-                      <Button onClick={handleCloseInfo}>Cancel</Button>
-                      <Button onClick={handleSubmitDialogInfo}>Submit</Button>
-                    </DialogActions>
-                  </div>
-                )}
+                        fullWidth
+                        variant="standard"
+                        style={{ flex: 4, margin: "0" }}
+                      />
+                    </div>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={handleCloseInfo}>Cancel</Button>
+                    <Button onClick={handleSubmitDialogInfo}>Submit</Button>
+                  </DialogActions>
+                </div>
               </Dialog>
 
               {isLoading ? (

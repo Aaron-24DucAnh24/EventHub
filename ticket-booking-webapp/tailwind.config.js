@@ -7,7 +7,11 @@ module.exports = {
   theme: {
     extend: {},
     colors: {
-      'main': '#5669FF'
+      'main': '#5669FF',
+      'picking': '#88050c',
+      'picked': '#ccc',
+      'vip': '#e50914',
+      'sweetbox': '#ee7a7a',
     }
   },
   plugins: [],

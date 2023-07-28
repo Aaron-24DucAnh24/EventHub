@@ -5,6 +5,14 @@ interface PropsASeatDescription {
   statusSeat: string;
 }
 
+const PICKED = "picked";
+const BANNED = "banned";
+const PICKING = "picking";
+const DEFAULT = "default";
+const VIP = "vip";
+const STANDARD = "standard";
+const SWEETBOX = "sweet-box";
+
 const ASeatDescription = ({ typeSeat, statusSeat }: PropsASeatDescription) => {
   return (
     <div className="flex items-center gap-[12px]">
@@ -12,31 +20,30 @@ const ASeatDescription = ({ typeSeat, statusSeat }: PropsASeatDescription) => {
         className={classNames(
           "w-[40px] h-[40px] border-[2px] rouned-[2px] border-solid flex justify-center items-center cursor-pointer hover:opacity-80",
           {
-            "bg-[#88050c] border-[#88050c] text-[#fff]":
-              statusSeat === "picking",
-            "bg-[#ccc] border-[#ccc] text-[#fff]":
-              statusSeat === "banned" || statusSeat === "picked",
-            "border-main": statusSeat === "default" && typeSeat === "standard",
-            "border-[#e50914]": statusSeat === "default" && typeSeat === "vip",
-            "border-[#ee7a7a] bg-[#ee7a7a] text-[#fff]":
-              statusSeat === "default" && typeSeat === "sweet-box",
+            "bg-picking border-picking text-[#fff]": statusSeat === PICKING,
+            "bg-picked border-picked text-[#fff]":
+              statusSeat === BANNED || statusSeat === PICKED,
+            "border-main": statusSeat === DEFAULT && typeSeat === STANDARD,
+            "border-vip": statusSeat === DEFAULT && typeSeat === VIP,
+            "border-sweetbox bg-sweetbox text-[#fff]":
+              statusSeat === DEFAULT && typeSeat === SWEETBOX,
           }
         )}
       >
-        {statusSeat === "banned" ? <p className="text-[20px]">X</p> : ""}
+        {statusSeat === BANNED ? <p className="text-[20px]">X</p> : ""}
       </div>
       <p className="m-0 text-[18px]">
-        {statusSeat === "picking"
+        {statusSeat === PICKING
           ? "Picking"
-          : statusSeat === "banned"
+          : statusSeat === BANNED
           ? "Banned"
-          : statusSeat === "picked"
+          : statusSeat === PICKED
           ? "Picked"
-          : typeSeat === "standard"
+          : typeSeat === STANDARD
           ? "Standard"
-          : typeSeat === "vip"
+          : typeSeat === VIP
           ? "VIP"
-          : typeSeat === "sweet-box"
+          : typeSeat === SWEETBOX
           ? "Sweet Box"
           : ""}
       </p>
@@ -48,14 +55,14 @@ const SeatDescription = () => {
   return (
     <div className="my-[80px] flex justify-between">
       <div className="flex gap-[36px]">
-        <ASeatDescription typeSeat="vip" statusSeat="picking" />
-        <ASeatDescription typeSeat="vip" statusSeat="picked" />
-        <ASeatDescription typeSeat="vip" statusSeat="banned" />
+        <ASeatDescription typeSeat={VIP} statusSeat={PICKING} />
+        <ASeatDescription typeSeat={VIP} statusSeat={PICKED} />
+        <ASeatDescription typeSeat={VIP} statusSeat={BANNED} />
       </div>
       <div className="flex gap-[36px]">
-        <ASeatDescription typeSeat="standard" statusSeat="default" />
-        <ASeatDescription typeSeat="vip" statusSeat="default" />
-        <ASeatDescription typeSeat="sweet-box" statusSeat="default" />
+        <ASeatDescription typeSeat={STANDARD} statusSeat={DEFAULT} />
+        <ASeatDescription typeSeat={VIP} statusSeat={DEFAULT} />
+        <ASeatDescription typeSeat={SWEETBOX} statusSeat={DEFAULT} />
       </div>
     </div>
   );

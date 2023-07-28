@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { ISeatEvent } from "../Dto/ISeat";
 import Seat from "./Seat";
 
@@ -9,7 +8,12 @@ interface Props {
   setPickingSeatsCount: (pickingSeatsCount: number) => void;
 }
 
-const SeatsList = ({seatsList, setSeatsList, pickingSeatsCount, setPickingSeatsCount}: Props) => {
+const SeatsList = ({
+  seatsList,
+  setSeatsList,
+  pickingSeatsCount,
+  setPickingSeatsCount,
+}: Props) => {
   return (
     <div className="flex gap-[20px] flex-wrap justify-center self-start">
       {seatsList.map((seat, seatIndex) => (
@@ -18,10 +22,10 @@ const SeatsList = ({seatsList, setSeatsList, pickingSeatsCount, setPickingSeatsC
           seatId={seat.seatId}
           typeSeat={seat.seat.type}
           seatStatus={seat.seatStatus}
-          seatsList = {seatsList}
-          setSeatsList = {setSeatsList}
-          pickingSeatsCount = {pickingSeatsCount}
-          setPickingSeatsCount = {setPickingSeatsCount}
+          seatsList={seatsList}
+          setSeatsList={setSeatsList}
+          pickingSeatsCount={pickingSeatsCount}
+          setPickingSeatsCount={setPickingSeatsCount}
         />
       ))}
     </div>

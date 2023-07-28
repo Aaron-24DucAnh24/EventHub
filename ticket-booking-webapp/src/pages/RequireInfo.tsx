@@ -1,6 +1,6 @@
 import { Button, Container, TextField, ThemeProvider } from "@mui/material";
 import React, { useState } from "react";
-import { createTheme, makeStyles } from "@mui/material/styles";
+import { createTheme } from "@mui/material/styles";
 import { useEmailStore } from "../store/email";
 import shallow from "zustand/shallow";
 import { useNavigate } from "react-router-dom";
@@ -16,8 +16,8 @@ const theme = createTheme({
 const RequireInfo = () => {
   const navigate = useNavigate();
   //Zustand
-  const [emailStore, setEmailStore] = useEmailStore(
-    (state: any) => [state.emailStore, state.setEmailStore],
+  const [setEmailStore] = useEmailStore(
+    (state: any) => [state.setEmailStore],
     shallow
   );
 
@@ -39,7 +39,7 @@ const RequireInfo = () => {
       return;
     }
     setEmailStore(email);
-    navigate(`/my-booking/${email}`)
+    navigate(`/my-booking/${email}`);
   };
   return (
     <Container className="mt-[80px] mb-[80px] flex gap-[40px] flex-col w-[40%]">

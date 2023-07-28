@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Button, CircularProgress, Container } from "@mui/material";
+import { CircularProgress, Container } from "@mui/material";
 import EventsList from "../components/EventsList";
 import { shallow } from "zustand/shallow";
 import api from "../api";
@@ -12,23 +12,19 @@ const HomePage = () => {
     (state) => [state.searchString, state.setSearchString],
     shallow
   );
-  console.log(searchString)
-
   const [events, setEvents] = useState<IEvent[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const fetchEvents = async () => {
     try {
       setIsLoading(true);
-      const response = await api.get("/Event", 
-      {
+      const response = await api.get("/Event", {
         params: {
-          isPublished: 'true',
+          isPublished: "true",
         },
         headers: {
           "ngrok-skip-browser-warning": "true",
         },
-        
       });
       setEvents(response.data);
     } catch (error) {
@@ -54,7 +50,6 @@ const HomePage = () => {
   );
 
   console.log(filterEventsSearch);
-  
 
   return (
     <Container className="my-[80px] flex items-center justify-start self-start flex-col">
@@ -66,13 +61,6 @@ const HomePage = () => {
       ) : (
         <EventsList events={filterEventsSearch} />
       )}
-      <Button
-        variant="contained"
-        className="rounded-[20px] bg-main text-[#fff] text-[16px] px-[24px] py-[6px] mt-[24px] self-center"
-        style={{ textTransform: "none" }}
-      >
-        See more
-      </Button>
     </Container>
   );
 };

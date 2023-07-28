@@ -1,7 +1,13 @@
-import React from "react";
 import classNames from "classnames";
 import { ISeatEvent } from "../Dto/ISeat";
-import { Alert } from "@mui/material";
+
+const STANDARD = 0;
+const VIP = 1;
+const SWEETBOX = 2;
+const DEFAULT = 0;
+const PICKING = -1;
+const PICKED = 1;
+const BANNED = 2;
 
 interface Props {
   typeSeat: number;
@@ -32,13 +38,13 @@ const Seat = ({
     }
     const updatedSeats = [...seatsList];
     if (
-      updatedSeats[seatPickingIndex].seatStatus === 1 ||
-      updatedSeats[seatPickingIndex].seatStatus === 2
+      updatedSeats[seatPickingIndex].seatStatus === PICKED ||
+      updatedSeats[seatPickingIndex].seatStatus === BANNED
     ) {
       return;
     }
-    if (updatedSeats[seatPickingIndex].seatStatus === -1) {
-      updatedSeats[seatPickingIndex].seatStatus = 0;
+    if (updatedSeats[seatPickingIndex].seatStatus === PICKING) {
+      updatedSeats[seatPickingIndex].seatStatus = DEFAULT;
       setPickingSeatsCount(pickingSeatsCount - 1);
     } else if (pickingSeatsCount < 3) {
       updatedSeats[seatPickingIndex].seatStatus = -1;
@@ -50,29 +56,28 @@ const Seat = ({
     setSeatsList(updatedSeats);
   };
 
-  
   return (
     <div
       className={classNames(
         "w-[40px] h-[40px] border-[2px] border-solid rouned-[2px] flex justify-center items-center cursor-pointer hover:opacity-80",
         {
           "bg-[#ccc] border-[#ccc] text-[#fff]":
-            seatStatus === 2 || seatStatus === 1,
-          "bg-[#88050c] border-[#88050c] text-[#fff]": seatStatus === -1,
-          "border-main": seatStatus === 0 && typeSeat === 0,
-          "border-[#e50914]": seatStatus === 0 && typeSeat === 1,
+            seatStatus === BANNED || seatStatus === PICKED,
+          "bg-[#88050c] border-[#88050c] text-[#fff]": seatStatus === PICKING,
+          "border-main": seatStatus === DEFAULT && typeSeat === STANDARD,
+          "border-[#e50914]": seatStatus === DEFAULT && typeSeat === VIP,
           "border-[#ee7a7a] bg-[#ee7a7a] text-[#fff]":
-            seatStatus === 0 && typeSeat === 2,
+            seatStatus === DEFAULT && typeSeat === SWEETBOX,
         }
       )}
       onClick={handleClickSeat}
     >
       <p
         className={classNames("m-0", {
-          "text-[24px]": seatStatus === 2,
+          "text-[24px]": seatStatus === BANNED,
         })}
       >
-        {seatStatus === 2 ? "X" : seatId}
+        {seatStatus === BANNED ? "X" : seatId}
       </p>
     </div>
   );

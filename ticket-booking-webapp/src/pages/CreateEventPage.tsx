@@ -15,7 +15,7 @@ import {
   ThemeProvider,
 } from "@mui/material";
 import FormData from "form-data";
-import { createTheme, makeStyles } from "@mui/material/styles";
+import { createTheme } from "@mui/material/styles";
 import { DatePicker } from "@mui/x-date-pickers";
 import axios from "axios";
 import { ChangeEvent, useEffect, useState } from "react";
@@ -24,8 +24,7 @@ import { PROVINCE_API } from "../config";
 import { IProvince } from "../Dto/IProvince";
 import { formatDateToStringCreateEvent } from "../utils/convertDateEvent";
 import { useNavigate } from "react-router-dom";
-import { Controller, useForm } from "react-hook-form";
-import { isBefore, parse } from "date-fns";
+import { useForm } from "react-hook-form";
 
 const initEventTypes = [
   "Live Music",
@@ -70,7 +69,6 @@ const CreateEventPage = () => {
     const formattedSelectedDate = Date.parse(date.toString());
     const isDateValid = currentDate.getTime() < formattedSelectedDate;
     if (!isDateValid) {
-      // alert("Selected date must be after or equal to today");
       setErrDatePicker("Selected date must be after or equal to today");
       return;
     }
@@ -151,7 +149,7 @@ const CreateEventPage = () => {
     },
   });
 
-  const { register, handleSubmit, formState, control } = form;
+  const { register, handleSubmit, formState } = form;
   const { errors } = formState;
 
   const onSubmit = async (data: FormValues) => {
@@ -201,8 +199,10 @@ const CreateEventPage = () => {
       formData.append("Prices", data.vipPrice);
       formData.append("Prices", data.sweetboxPrice);
       const response = await api.post("/Event", formData, config);
-      navigate("/unpublished-event");
-      setIsPostSuccess(true);
+      if (response) {
+        navigate("/unpublished-event");
+        setIsPostSuccess(true);
+      }
     } catch (error) {
       console.log(error);
     } finally {
@@ -440,7 +440,6 @@ const CreateEventPage = () => {
                   variant="contained"
                   component="label"
                   className="flex self-start"
-                  // onClick={handleUploadClick}
                 >
                   Upload File
                   <input
@@ -475,7 +474,6 @@ const CreateEventPage = () => {
                 variant="contained"
                 type="submit"
                 className="flex w-[400px] text-[16px] py-[10px] rounded-[10px]"
-                // onClick={handleCreateEvent}
               >
                 Create Event
               </Button>

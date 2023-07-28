@@ -53,8 +53,10 @@ const CardEvent = ({ event, eventsList, setEventsList }: Props) => {
           "ngrok-skip-browser-warning": "true",
         },
       });
-      if(response && eventsList && setEventsList) {
-        const newEventsList = eventsList.filter((eventItem) => eventItem.id !== event.id);
+      if (response && eventsList && setEventsList) {
+        const newEventsList = eventsList.filter(
+          (eventItem) => eventItem.id !== event.id
+        );
         setEventsList(newEventsList);
       }
       setIsLoading(false);
@@ -72,7 +74,7 @@ const CardEvent = ({ event, eventsList, setEventsList }: Props) => {
     setOpenPublishConfirmation(true);
   };
   return (
-    <Card sx={{ maxWidth: 345, height: '100%' }}>
+    <Card sx={{ maxWidth: 345, height: "100%" }}>
       <CardActionArea>
         <CardMedia
           component="img"

@@ -8,13 +8,13 @@ interface Props {
 }
 const EventsList = ({ events }: Props) => {
   console.log(events);
-  
+
   const [eventsList, setEventsList] = useState<IEvent[]>([]);
 
   useEffect(() => {
     setEventsList(events);
-  }, [events])
-  
+  }, [events]);
+
   return (
     <div className="flex gap-[24px] flex-wrap">
       {eventsList.map((event, eventIndex) => {

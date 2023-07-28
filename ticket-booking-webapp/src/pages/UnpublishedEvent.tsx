@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Button, CircularProgress, Container } from "@mui/material";
+import { CircularProgress, Container } from "@mui/material";
 import EventsList from "../components/EventsList";
 import { shallow } from "zustand/shallow";
 import api from "../api";
@@ -7,8 +7,8 @@ import { IEvent } from "../Dto/IEvent";
 import { useSearchStore } from "../store/search";
 
 const UnpublishedEvent = () => {
-  const [searchString, setSearchString] = useSearchStore(
-    (state) => [state.searchString, state.setSearchString],
+  const [searchString] = useSearchStore(
+    (state) => [state.searchString],
     shallow
   );
 
@@ -62,13 +62,6 @@ const UnpublishedEvent = () => {
       ) : (
         <EventsList events={filterEventsSearch} />
       )}
-      <Button
-        variant="contained"
-        className="rounded-[20px] bg-main text-[#fff] text-[16px] px-[24px] py-[6px] mt-[24px] self-center"
-        style={{ textTransform: "none" }}
-      >
-        See more
-      </Button>
     </Container>
   );
 };

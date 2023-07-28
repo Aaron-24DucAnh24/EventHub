@@ -18,10 +18,7 @@ const NavBar = () => {
     shallow
   );
 
-  const [emailStore, setEmailStore] = useEmailStore(
-    (state) => [state.emailStore, state.setEmailStore],
-    shallow
-  );
+  const [emailStore] = useEmailStore((state) => [state.emailStore], shallow);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchString(event.target.value);

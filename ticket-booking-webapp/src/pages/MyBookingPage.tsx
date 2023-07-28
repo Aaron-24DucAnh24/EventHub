@@ -1,14 +1,13 @@
 import { Button, CircularProgress, Container } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { BiSolidMap, BiTimeFive } from "react-icons/bi";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import shallow from "zustand/shallow";
 import api from "../api";
-import { IEvent, IEventBooking, ISeatBooking } from "../Dto/IEvent";
-import { ISeatEvent } from "../Dto/ISeat";
+import { IEventBooking, ISeatBooking } from "../Dto/IEvent";
 import { useEmailStore } from "../store/email";
 import { formatDateEventDetail } from "../utils/convertDateEvent";
-import { createTheme, makeStyles, ThemeProvider } from "@mui/material/styles";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 const theme = createTheme({
   palette: {
@@ -19,16 +18,8 @@ const theme = createTheme({
 });
 
 const MyBookingPage = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const { email } = useParams<{ email: string }>();
-  // const email = `huulongn15@gmail.com`;
-
-  const [emailStore, setEmailStore] = useEmailStore(
-    (state) => [state.emailStore, state.setEmailStore],
-    shallow
-  );
-
+  const [emailStore] = useEmailStore((state) => [state.emailStore], shallow);
   if (!emailStore) {
     navigate("/require-info");
   }
@@ -66,7 +57,6 @@ const MyBookingPage = () => {
     return totalPrice;
   };
 
-
   return (
     <Container className="mt-[80px] mb-[80px]">
       {isLoading ? (
@@ -92,8 +82,7 @@ const MyBookingPage = () => {
       ) : (
         <div>
           <h3 className="m-0 mb-[60px] text-[32px] leading-[40px] text-main">
-            All bookings of {" "}
-            <span className="underline">{emailStore}</span> .
+            All bookings of <span className="underline">{emailStore}</span>
           </h3>
           {eventsBooking.map((event) => (
             <div className="mt-[20px] flex gap-[50px] p-[20px] rounded-[20px] border-[#ccc] border-solid border-[4px] min-h-[230px]">

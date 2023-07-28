@@ -1,5 +1,5 @@
 import { CircularProgress, Container } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../api";
 import EventDescription from "../components/EventDescription";
@@ -10,9 +10,21 @@ import { ISeatEvent } from "../Dto/ISeat";
 
 const EventDetailPage = () => {
   const { eventId } = useParams<{ eventId: string }>();
-
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [pickingSeatsCount, setPickingSeatsCount] = useState<number>(0);
   const [event, setEvent] = useState<IEvent>();
+  const [seatsList, setSeatsList] = useState<ISeatEvent[] | undefined>(
+    event?.seatEvents
+  );
+
+  useEffect(() => {
+    fetchEvent();
+  }, [eventId]);
+
+  useEffect(() => {
+    setSeatsList(event?.seatEvents);
+  }, [event]);
+
   const fetchEvent = async () => {
     try {
       setIsLoading(true);
@@ -30,20 +42,6 @@ const EventDetailPage = () => {
       setIsLoading(false);
     }
   };
-  useEffect(() => {
-    fetchEvent();
-  }, [eventId]);
-  
-  const [seatsList, setSeatsList] = useState<ISeatEvent[] | undefined>(
-    event?.seatEvents
-  );
-  useEffect(() => {
-    setSeatsList(event?.seatEvents)
-  }, [event])
-  
-  
-
-  const [pickingSeatsCount, setPickingSeatsCount] = useState<number>(0);
 
   return (
     <Container className="my-[80px]">
