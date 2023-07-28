@@ -76,7 +76,7 @@ namespace TicketBooking.API.Repository
 						<br/>
 						Your confirmation code is <strong style=""color: blue;"">{code}</strong>
 						<br/>
-						Link to your bookings: <a style=""color: blue;"" href=""https://ticket-booking-eight.vercel.app/my-booking/{mail}"">Booking</a>
+						Link to your bookings: <a style=""color: blue;"" href=""http://localhost:3000/my-booking/{mail}"">Booking</a>
 					</h3>
 				</body>
 			</html>";
