@@ -8,7 +8,7 @@
     "MinPrice": 350000,
     "Location": "The Nest, Thôn Măng Lin, Phường 7, Đà Lạt",
     "StageName": "Mây In The Nest",
-    "City": ""
+    "City": "Đà Lạt"
   },
   {
     "Id": "e2",
@@ -19,7 +19,7 @@
     "MinPrice": 450000,
     "Location": "The Nest, Thôn Măng Lin, Phường 7, Đà Lạt",
     "StageName": "Mây In The Nest",
-    "City": ""
+    "City": "Đà Lạt"
   },
   {
     "Id": "e3",
@@ -52,7 +52,7 @@
     "MinPrice": 500000,
     "StageName": "SHERATON Đà Nẵng",
     "Location": "Bờ Đông cầu Rồng, đường Trần Hưng Đạo, quận Sơn Trà, Đà Nẵng",
-    "City": ""
+    "City": "Đà Nẵng"
   },
   {
     "Id": "e6",
@@ -63,6 +63,6 @@
     "MinPrice": 450000,
     "StageName": "NHÀ HÁT GIAO HƯỞNG NHẠC VŨ KỊCH",
     "Location": "89 Phố Huế, Ngô Thì Nhậm, Hai Bà Trưng, Hà Nội",
-    "City": ""
+    "City": "Hà Nội"
   }
 ]
