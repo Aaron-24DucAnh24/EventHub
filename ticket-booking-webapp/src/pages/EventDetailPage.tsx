@@ -30,7 +30,7 @@ const EventDetailPage = () => {
       setIsLoading(true);
       const response = await api.get(`/Event/${eventId}`, {
         headers: {
-          "ngrok-skip-browser-warning": "true",
+          "Access-Control-Allow-Origin": "*",
         },
       });
       if (response.data) {

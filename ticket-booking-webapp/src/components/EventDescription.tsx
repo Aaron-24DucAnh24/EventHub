@@ -84,7 +84,7 @@ const EventDescription = ({ seatsList, setSeatsList, event }: Props) => {
       const config = {
         headers: {
           "Content-Type": "application/json-patch+json",
-          "ngrok-skip-browser-warning": "true",
+          "Access-Control-Allow-Origin": "*",
         },
       };
       if (!event?.id) return;
@@ -119,7 +119,7 @@ const EventDescription = ({ seatsList, setSeatsList, event }: Props) => {
           code: code,
         },
         headers: {
-          "ngrok-skip-browser-warning": "true",
+          "Access-Control-Allow-Origin": "*",
         },
       });
       if (response && seatsList) {

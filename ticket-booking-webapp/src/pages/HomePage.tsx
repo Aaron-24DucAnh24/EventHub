@@ -23,7 +23,7 @@ const HomePage = () => {
           isPublished: "true",
         },
         headers: {
-          "ngrok-skip-browser-warning": "true",
+          "Access-Control-Allow-Origin": "*",
         },
       });
       setEvents(response.data);

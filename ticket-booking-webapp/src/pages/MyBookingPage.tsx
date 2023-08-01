@@ -32,7 +32,7 @@ const MyBookingPage = () => {
       setIsLoading(true);
       const response = await api.get(`/Invoice/${emailStore}`, {
         headers: {
-          "ngrok-skip-browser-warning": "true",
+          "Access-Control-Allow-Origin": "*",
         },
       });
       if (response.data) {
