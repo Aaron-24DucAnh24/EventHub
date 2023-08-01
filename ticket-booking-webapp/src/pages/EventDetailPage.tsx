@@ -31,6 +31,7 @@ const EventDetailPage = () => {
       const response = await api.get(`/Event/${eventId}`, {
         headers: {
           "Access-Control-Allow-Origin": "*",
+          "ngrok-skip-browser-warning": "true"
         },
       });
       if (response.data) {

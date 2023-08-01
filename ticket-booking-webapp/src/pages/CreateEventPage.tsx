@@ -173,6 +173,7 @@ const CreateEventPage = () => {
         headers: {
           "Content-Type": "multipart/form-data",
           "Access-Control-Allow-Origin": "*",
+          "ngrok-skip-browser-warning": "true",
         },
       };
       let formData = new FormData();

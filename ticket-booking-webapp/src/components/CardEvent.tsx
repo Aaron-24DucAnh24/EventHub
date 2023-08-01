@@ -51,6 +51,7 @@ const CardEvent = ({ event, eventsList, setEventsList }: Props) => {
         },
         headers: {
           "Access-Control-Allow-Origin": "*",
+          "ngrok-skip-browser-warning": "true"
         },
       });
       if (response && eventsList && setEventsList) {

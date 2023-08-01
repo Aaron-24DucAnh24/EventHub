@@ -24,6 +24,7 @@ const HomePage = () => {
         },
         headers: {
           "Access-Control-Allow-Origin": "*",
+          "ngrok-skip-browser-warning": "true"
         },
       });
       setEvents(response.data);
