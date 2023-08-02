@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TicketBooking.API.DBContext;
-using TicketBooking.API.Interfaces;
+using TicketBooking.API.Services;
 using TicketBooking.API.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,16 +12,19 @@ builder.Services
         = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
 builder.Services.AddEndpointsApiExplorer();
-
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+builder.Services.AddScoped<IEmailValidationService, EmailValidationService>();
+builder.Services.AddSingleton<ICacheService, CacheService>();
+builder.Services.AddSingleton<IBlobService, BlobService>();
+
 builder.Services.AddScoped<IEventRepository, EventRepository>();
-
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-
+builder.Services.AddScoped<ISeatRepository, SeatRepository>();
 builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
-
-builder.Services.AddScoped<IEmailValidationRepository, EmailValidationRepository>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

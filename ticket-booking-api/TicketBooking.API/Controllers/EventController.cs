@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using TicketBooking.API.Interfaces;
+using TicketBooking.API.Services;
 using TicketBooking.API.Dto;
 using TicketBooking.API.Helper;
 using AutoMapper;
+using TicketBooking.API.Models;
 
 namespace TicketBooking.API.Controller
 {
@@ -10,15 +11,15 @@ namespace TicketBooking.API.Controller
 	[Route("api/[controller]")]
 	public class EventController: ControllerBase
 	{
-		private readonly IEventRepository __eventRepository;
-		private readonly IMapper __mapper;
+		private readonly IEventService _eventService;
+		private readonly IMapper _mapper;
 
 		public EventController(
-			IEventRepository eventRepository,
+			IEventService eventService,
 			IMapper mapper)
 		{
-			__eventRepository = eventRepository;
-			__mapper = mapper;
+			_eventService = eventService;
+			_mapper = mapper;
 		}
 
 		[HttpGet]
@@ -26,8 +27,8 @@ namespace TicketBooking.API.Controller
 		public ActionResult GetEvents([FromQuery] bool IsPublished)
 		{
 			var events = IsPublished
-				? __mapper.Map<List<EventResponse>>(__eventRepository.GetPublishedEvents())
-				: __mapper.Map<List<EventResponse>>(__eventRepository.GetUnPublishedEvents());	
+				? _mapper.Map<List<EventResponse>>(_eventService.GetPublishedEvents())
+				: _mapper.Map<List<EventResponse>>(_eventService.GetUnPublishedEvents());	
 
 			if(!ModelState.IsValid)
 			{
@@ -42,7 +43,7 @@ namespace TicketBooking.API.Controller
 		[ProducesResponseType(400)]
 		public ActionResult GetEvent(string eventId)
 		{
-			var e = __eventRepository.GetEvent(eventId);
+			var e = _eventService.GetEventDetail(eventId);
 
 			if(e == null){
 				return NotFound();
@@ -53,7 +54,7 @@ namespace TicketBooking.API.Controller
 				return BadRequest(ModelState);
 			}
 
-			return Ok(__mapper.Map<EventDetailResponse>(e));
+			return Ok(_mapper.Map<EventDetailResponse>(e));
 		}
 
 		[HttpDelete("{eventId}")]
@@ -61,7 +62,7 @@ namespace TicketBooking.API.Controller
 		[ProducesResponseType(400)]
 		public ActionResult DeleteEvent(string eventId)
 		{
-			var e = __eventRepository.GetEvent(eventId);
+			var e = _eventService.GetEvent(eventId);
 
 			if(!ModelState.IsValid)
 			{
@@ -73,7 +74,7 @@ namespace TicketBooking.API.Controller
 				return NotFound();
 			}
 
-			if(!__eventRepository.DeleteEvent(e))
+			if(!_eventService.DeleteEvent(eventId))
 			{
 				return Problem(ResponseStatus.DeleteError);
 			}
@@ -86,12 +87,19 @@ namespace TicketBooking.API.Controller
 		[ProducesResponseType(400)]
 		public ActionResult SetPublished(string eventId)
 		{
+			Event? e = _eventService.GetEvent(eventId);
+
+			if(e == null)
+			{
+				return NotFound();
+			}
+
 			if(!ModelState.IsValid)
 			{
 				return BadRequest(ModelState);
 			}
 
-			if(!__eventRepository.SetPublished(eventId))
+			if(!_eventService.SetPublished(eventId))
 			{
 				return Problem(ResponseStatus.UpdateError);
 			}
@@ -110,7 +118,7 @@ namespace TicketBooking.API.Controller
 				&& eventRequest.Image.ContentType != "image/jpg")
 				return BadRequest();
 
-			var result = await __eventRepository.CreateEvent(eventRequest);
+			var result = await _eventService.CreateEvent(eventRequest);
 
 			if(!result)
 			{

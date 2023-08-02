@@ -1,18 +1,17 @@
 using System.Net;
 using System.Net.Mail;
-using TicketBooking.API.Interfaces;
 using TicketBooking.API.Helper;
 
-namespace TicketBooking.API.Repository
+namespace TicketBooking.API.Services
 {
-	public class EmailValidationRepository : IEmailValidationRepository
+	public class EmailValidationService : IEmailValidationService
 	{
-		private readonly SmtpClient __smtpClient;
+		private readonly SmtpClient _smtpClient;
 
-		public EmailValidationRepository()
+		public EmailValidationService()
 		{
 
-			__smtpClient = new SmtpClient(ConfigurationString.SmtpClient, 587)
+			_smtpClient = new SmtpClient(ConfigurationString.SmtpClient, 587)
 			{
 				EnableSsl = true,
 				UseDefaultCredentials = false,
@@ -38,7 +37,7 @@ namespace TicketBooking.API.Repository
 
 			try
 			{
-				await __smtpClient.SendMailAsync(message);
+				await _smtpClient.SendMailAsync(message);
 			}
 			catch (Exception)
 			{

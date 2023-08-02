@@ -1,29 +1,26 @@
 using TicketBooking.API.Dto;
-using TicketBooking.API.Interfaces;
 using TicketBooking.API.Models;
-using TicketBooking.API.DBContext;
 using TicketBooking.API.Enum;
-using Microsoft.EntityFrameworkCore;
+using TicketBooking.API.Repository;
 
-namespace TicketBooking.API.Repository
+namespace TicketBooking.API.Services
 {
-	public class InvoiceRepository : IInvoiceRepository
+	public class InvoiceService : IInvoiceService
 	{
-		private readonly ApplicationDbContext __dbContext;
+		private readonly IInvoiceRepository _invoiceRepository;
+		private readonly ISeatRepository _seatRepository;
 
-		public InvoiceRepository(ApplicationDbContext dbContext)
+		public InvoiceService(
+			IInvoiceRepository invoiceRepository, 
+			ISeatRepository seatRepository)
 		{
-			__dbContext = dbContext;
+			_invoiceRepository = invoiceRepository;
+			_seatRepository = seatRepository;
 		}
 
 		public List<InvoiceResponse>? GetInvoices(string mail)
 		{
-			var invoices = __dbContext.Invoices
-				.Where(x => x.Mail == mail)
-				.Where(x => x.IsValidated)
-				.Include(x => x.Event)
-				.Include(x => x.Seats)
-				.ToList();
+			var invoices = _invoiceRepository.GetInvoices(mail);
 
 			var result = new List<InvoiceResponse>();
 
@@ -48,10 +45,7 @@ namespace TicketBooking.API.Repository
 
 				foreach (var seat in invoice.Seats)
 				{
-					var seatEvent = __dbContext.SeatEvents
-						.Where(x => x.EventId == invoice.EventId)
-						.Where(x => x.SeatId == seat.Id)
-						.FirstOrDefault();
+					var seatEvent = _seatRepository.GetSeatEvent(seat.Id, invoice.EventId);
 
 					var seatResponse = new SeatResponse()
 					{
@@ -83,45 +77,32 @@ namespace TicketBooking.API.Repository
 				Code = code,
 			};
 
-			__dbContext.Add(invoice);
-
-			var result = __dbContext.SaveChanges();
-
-			var addSeatInvoice = AddSeatInvoice(invoiceRequest.seatIds, invoiceId);
-
-			if (addSeatInvoice == 0)
+			if (!_invoiceRepository.AddInvoice(invoice))
 				return "";
 
-			if (result == 0)
+			if (!AddSeatInvoice(invoiceRequest.seatIds, invoiceId))
 				return "";
 
 			return invoiceId;
 		}
 
-		public int ValidateInvoice(string invoiceId, string code)
+		public bool ValidateInvoice(string invoiceId, string code)
 		{
-			var invoice = __dbContext.Invoices
-				.Where(x => x.Id == invoiceId)
-				.Where(x => x.Code == code)
-				.Where(x => !x.IsValidated)
-				.Include(x => x.Seats)
-				.FirstOrDefault();
+			var invoice = _invoiceRepository.GetInvoiceWithCode(invoiceId, code);
 
 			if (invoice == null)
-				return 0;
+				return false;
 
 			var updateSeatEvent = UpdateSeatEvent(invoice.Seats.ToList(), invoice.EventId);
 
-			if (updateSeatEvent == 0)
-				return 0;
+			if (!updateSeatEvent)
+				return false;
 
 			invoice.IsValidated = true;
-			__dbContext.Update(invoice);
-
-			return __dbContext.SaveChanges();
+			return _invoiceRepository.UpdateInvoice(invoice);
 		}
 
-		private int AddSeatInvoice(List<string> seatIds, string invoiceId)
+		private bool AddSeatInvoice(List<string> seatIds, string invoiceId)
 		{
 			foreach (var seatId in seatIds)
 			{
@@ -130,13 +111,15 @@ namespace TicketBooking.API.Repository
 					SeatId = seatId,
 					InvoiceId = invoiceId,
 				};
-				__dbContext.Add(seatInvoice);
+
+				if(!_seatRepository.AddSeatInvoice(seatInvoice))
+					return false;
 			}
 
-			return __dbContext.SaveChanges();
+			return true;
 		}
 
-		private int UpdateSeatEvent(List<Seat> seats, string eventId)
+		private bool UpdateSeatEvent(List<Seat> seats, string eventId)
 		{
 			var seatIds = new List<string>();
 
@@ -145,18 +128,16 @@ namespace TicketBooking.API.Repository
 				seatIds.Add(seat.Id);
 			}
 
-			var seatEvents = __dbContext.SeatEvents
-				.Where(x => seatIds.Contains(x.SeatId))
-				.Where(x => x.EventId == eventId)
-				.ToList();
+			var seatEvents = _seatRepository.GetSeatEvents(seatIds, eventId);
 
 			foreach (var seatEvent in seatEvents)
 			{
 				seatEvent.SeatStatus = SeatStatus.Picked;
-				__dbContext.Update(seatEvent);
+				if(!_seatRepository.UpdateSeatEvent(seatEvent))
+					return false;
 			}
 
-			return __dbContext.SaveChanges();
+			return true;
 		}
 	}
 }

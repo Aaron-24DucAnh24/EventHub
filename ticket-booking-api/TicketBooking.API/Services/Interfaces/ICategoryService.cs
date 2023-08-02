@@ -1,8 +1,8 @@
 using TicketBooking.API.Models;
 
-namespace TicketBooking.API.Interfaces
+namespace TicketBooking.API.Services
 {
-	public interface ICategoryRepository
+	public interface ICategoryService
 	{
 		public List<Category> GetCategories();
   }

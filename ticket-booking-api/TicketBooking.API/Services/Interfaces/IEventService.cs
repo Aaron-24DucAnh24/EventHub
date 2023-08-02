@@ -1,15 +1,16 @@
 using TicketBooking.API.Dto;
 using TicketBooking.API.Models;
 
-namespace TicketBooking.API.Interfaces
+namespace TicketBooking.API.Services
 {
-	public interface IEventRepository 
+	public interface IEventService
 	{
 		public ICollection<Event> GetPublishedEvents();
 		public ICollection<Event> GetUnPublishedEvents();
-		public Event? GetEvent(string eventId);
+		public Event? GetEvent(string id);
+		public Event? GetEventDetail(string eventId);
 		public Task<bool> CreateEvent(EventRequest eventRequest);
 		public bool SetPublished(string eventId);
-		public bool DeleteEvent(Event e);
+		public bool DeleteEvent(string eventId);
   }
 }
