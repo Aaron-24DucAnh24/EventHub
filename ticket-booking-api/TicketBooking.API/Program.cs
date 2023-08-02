@@ -18,8 +18,8 @@ builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 builder.Services.AddScoped<IEmailValidationService, EmailValidationService>();
-builder.Services.AddSingleton<ICacheService, CacheService>();
-builder.Services.AddSingleton<IBlobService, BlobService>();
+builder.Services.AddScoped<ICacheService, CacheService>();
+builder.Services.AddScoped<IBlobService, BlobService>();
 
 builder.Services.AddScoped<IEventRepository, EventRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();

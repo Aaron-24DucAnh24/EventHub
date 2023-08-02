@@ -124,8 +124,9 @@ namespace TicketBooking.API.Services
 			return true;
 		}
 
-		public bool DeleteEvent(string eventId)
+		public async Task<bool> DeleteEvent(string eventId)
 		{
+			await _blobService.RemoveImage(eventId);
 			return _eventRepository.DeleteEvent(eventId);
 		}
 

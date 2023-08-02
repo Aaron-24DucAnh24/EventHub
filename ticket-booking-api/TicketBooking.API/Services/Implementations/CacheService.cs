@@ -8,17 +8,27 @@ namespace TicketBooking.API.Services
 
     public T GetData<T>(string key)
     {
-      throw new NotImplementedException();
+      return (T) _memoryCache.Get(key);
     }
 
-    public object RemoveData(string key)
+    public bool RemoveData(string key)
     {
-      throw new NotImplementedException();
+      if(string.IsNullOrEmpty(key))
+      {
+        return false;
+      }
+      _memoryCache.Remove(key);
+      return true;
     }
 
     public bool SetData<T>(string key, T value, DateTimeOffset expirationTime)
     {
-      throw new NotImplementedException();
+      if(string.IsNullOrEmpty(key) || value == null)
+      {
+        return false;
+      }
+      _memoryCache.Set(key, value, expirationTime);
+      return true;
     }
   }
 }

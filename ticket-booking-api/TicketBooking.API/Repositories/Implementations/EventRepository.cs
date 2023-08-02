@@ -88,10 +88,14 @@ namespace TicketBooking.API.Repository
           CategoryId = category.Id,
           EventId = eventId,
         };
+
         _dbContext.Add(eventCategory);
+
+        if(_dbContext.SaveChanges() == 0)
+          return false;
       }
 
-      return _dbContext.SaveChanges() != 0;
+      return true;
     }
 
     bool IEventRepository.AddSeatEvent(EventRequest eventRequest, string eventId)
