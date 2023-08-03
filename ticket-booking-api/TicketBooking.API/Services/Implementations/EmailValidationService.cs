@@ -1,18 +1,17 @@
 using System.Net;
 using System.Net.Mail;
-using TicketBooking.API.Interfaces;
 using TicketBooking.API.Helper;
 
-namespace TicketBooking.API.Repository
+namespace TicketBooking.API.Services
 {
-	public class EmailValidationRepository : IEmailValidationRepository
+	public class EmailValidationService : IEmailValidationService
 	{
-		private readonly SmtpClient __smtpClient;
+		private readonly SmtpClient _smtpClient;
 
-		public EmailValidationRepository()
+		public EmailValidationService()
 		{
 
-			__smtpClient = new SmtpClient(ConfigurationString.SmtpClient, 587)
+			_smtpClient = new SmtpClient(ConfigurationString.SmtpClient, 587)
 			{
 				EnableSsl = true,
 				UseDefaultCredentials = false,
@@ -38,7 +37,7 @@ namespace TicketBooking.API.Repository
 
 			try
 			{
-				await __smtpClient.SendMailAsync(message);
+				await _smtpClient.SendMailAsync(message);
 			}
 			catch (Exception)
 			{
@@ -76,7 +75,7 @@ namespace TicketBooking.API.Repository
 						<br/>
 						Your confirmation code is <strong style=""color: blue;"">{code}</strong>
 						<br/>
-						Link to your bookings: <a style=""color: blue;"" href=""https://ticket-booking-eight.vercel.app/my-booking/{mail}"">Booking</a>
+						Link to your bookings: <a style=""color: blue;"" href=""http://localhost:3000/my-booking/{mail}"">Booking</a>
 					</h3>
 				</body>
 			</html>";

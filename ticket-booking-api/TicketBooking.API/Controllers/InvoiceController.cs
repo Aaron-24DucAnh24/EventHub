@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TicketBooking.API.Dto;
-using TicketBooking.API.Interfaces;
 using TicketBooking.API.Helper;
+using TicketBooking.API.Services;
 
 namespace TicketBooking.API.Controller
 {
@@ -9,23 +9,23 @@ namespace TicketBooking.API.Controller
 	[Route("api/[controller]")]
 	public class InvoiceController : ControllerBase
 	{
-		private readonly IInvoiceRepository __invoicesRepository;
-		private readonly IEmailValidationRepository __emailValidationRepository;
+		private readonly IInvoiceService _invoicesService;
+		private readonly IEmailValidationService _emailValidationService;
 
 		public InvoiceController(
-			IInvoiceRepository invoicesRepository,
-			IEmailValidationRepository emailValidationRepository
+			IInvoiceService invoicesService,
+			IEmailValidationService emailValidationService
 		)
 		{
-			__invoicesRepository = invoicesRepository;
-			__emailValidationRepository = emailValidationRepository;
+			_invoicesService = invoicesService;
+			_emailValidationService = emailValidationService;
 		}
 
 		[HttpGet("{mail}")]
 		[ProducesResponseType(200, Type = typeof(List<InvoiceResponse>))]
 		public ActionResult GetInvoice(string mail)
 		{
-			var result = __invoicesRepository.GetInvoices(mail);
+			var result = _invoicesService.GetInvoices(mail);
 
 			if(!ModelState.IsValid)
 				return BadRequest(ModelState);
@@ -37,7 +37,7 @@ namespace TicketBooking.API.Controller
 		[ProducesResponseType(204, Type = typeof(string))]
 		public async Task<ActionResult> AddInvoice(InvoiceRequest invoiceRequest)
 		{
-			string code = await __emailValidationRepository.SendValidationCode(
+			string code = await _emailValidationService.SendValidationCode(
 				invoiceRequest.FullName,
 				invoiceRequest.Mail
 			);
@@ -47,7 +47,7 @@ namespace TicketBooking.API.Controller
 				return Problem(ResponseStatus.ServiceError);
 			}
 
-			string invoiceId = __invoicesRepository.AddInvoice(invoiceRequest, code);
+			string invoiceId = _invoicesService.AddInvoice(invoiceRequest, code);
 
 			if (invoiceId == "")
 			{
@@ -67,9 +67,9 @@ namespace TicketBooking.API.Controller
 				[FromQuery] string invoiceId,
 				[FromQuery] string code)
 		{
-			int result = __invoicesRepository.ValidateInvoice(invoiceId, code);
+			bool result = _invoicesService.ValidateInvoice(invoiceId, code);
 
-			if (result == 0)
+			if (!result)
 				return Problem(ResponseStatus.UpdateError);
 
 			if (!ModelState.IsValid)

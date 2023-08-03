@@ -7,10 +7,10 @@ namespace TicketBooking.API.Helper
         .AddJsonFile("appsettings.json")
         .Build();
 
-    static public string Database { get; } = configuration.GetConnectionString("TicketBookingDatabase");
-    static public string BlobStorage { get; } = configuration.GetConnectionString("TicketBookingStorage");
-    static public string SmtpClient { get; } = configuration.GetConnectionString("SmtpClient");
-    static public string EmailClient { get; } = configuration.GetConnectionString("EmailClient");
-    static public string EmailPassword { get; } = configuration.GetConnectionString("Password");
+    static public readonly string Database = configuration.GetConnectionString("TicketBookingDatabase");
+    static public readonly string BlobStorage = configuration.GetConnectionString("TicketBookingStorage");
+    static public readonly string SmtpClient = configuration.GetConnectionString("SmtpClient");
+    static public readonly string EmailClient = configuration.GetConnectionString("EmailClient");
+    static public readonly string EmailPassword = configuration.GetConnectionString("Password");
   }
 }

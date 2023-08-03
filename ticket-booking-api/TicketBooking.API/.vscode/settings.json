@@ -1,6 +1,3 @@
 {
-  "dotnet.defaultSolution": "TicketBooking.API.sln",
-  "cSpell.words": [
-    "Newtonsoft"
-  ]
+  "dotnet.defaultSolution": "TicketBooking.API.sln"
 }
