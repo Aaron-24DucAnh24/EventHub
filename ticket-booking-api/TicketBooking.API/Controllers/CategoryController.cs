@@ -28,7 +28,7 @@ namespace TicketBooking.API.Controller
 		[ProducesResponseType(204, Type = typeof(IEnumerable<CategoryResponse>))]
 		public ActionResult GetCategories()
 		{
-			var result = _cacheService.GetData<List<CategoryResponse>>(CacheKeys.Categories);
+			List<CategoryResponse>? result = _cacheService.GetData<List<CategoryResponse>>(CacheKeys.Categories);
 
 			if(result != null && result.Count > 0)
 				return Ok(result);

@@ -30,7 +30,7 @@ namespace TicketBooking.API.Repository
 
     public bool DeleteEvent(string id)
     {
-      var e = GetEvent(id);
+      Event? e = GetEvent(id);
 
       if (e == null)
         return false;
@@ -82,8 +82,12 @@ namespace TicketBooking.API.Repository
     {
       foreach (var categoryName in categoryNames)
       {
-        var category = _categoryRepository.GetCategory(categoryName);
-        var eventCategory = new EventCategory()
+        Category? category = _categoryRepository.GetCategory(categoryName);
+
+        if(category == null)
+          return false;
+
+        EventCategory eventCategory = new()
         {
           CategoryId = category.Id,
           EventId = eventId,
@@ -100,11 +104,11 @@ namespace TicketBooking.API.Repository
 
     bool IEventRepository.AddSeatEvent(EventRequest eventRequest, string eventId)
     {
-      var seats = _seatRepository.GetSeats();
+      List<Seat> seats = _seatRepository.GetSeats();
 
       foreach (var seat in seats)
       {
-        var seatEvent = new SeatEvent()
+        SeatEvent seatEvent = new()
         {
           SeatId = seat.Id,
           EventId = eventId,

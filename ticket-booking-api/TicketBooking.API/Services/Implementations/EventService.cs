@@ -79,8 +79,8 @@ namespace TicketBooking.API.Services
 
 			string imgUrl = await _blobService.UpLoadImage(eventRequest.Image, newEventId);
 
-			var newEvent = new Event
-			{
+			Event newEvent = new()
+      {
 				Id = newEventId,
 				Duration = eventRequest.Duration,
 				Title = eventRequest.Title,
@@ -105,15 +105,14 @@ namespace TicketBooking.API.Services
 			return true;
 		}
 
-		public async Task<bool> DeleteEvent(string eventId)
+		public async Task<bool> DeleteEvent(Event e)
 		{
-			await _blobService.RemoveImage(eventId);
-			return _eventRepository.DeleteEvent(eventId);
+			await _blobService.RemoveImage(e.Id);
+			return _eventRepository.DeleteEvent(e.Id);
 		}
 
-		public bool SetPublished(string evenId)
+		public bool SetPublished(Event e)
 		{
-			var e = GetEvent(evenId);
 			e.IsPublished = true;
 			e.UpdatedAt = DateTime.Now;
 			return _eventRepository.UpdateEvent(e);

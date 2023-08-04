@@ -24,11 +24,16 @@ namespace TicketBooking.API.Services
 
 		public async Task<string> SendValidationCode(string fullName, string mail)
 		{
-			var code = GetCode();
-			var mailTitle = GetMailTitle(fullName);
-			var mailContent = GetMailContent(fullName, code, mail);
-			var message = new MailMessage(
-				from: ConfigurationString.EmailClient,
+			string code = GetCode();
+			string mailTitle = GetMailTitle(fullName);
+			string mailContent = GetMailContent(fullName, code, mail);
+			string? emailClient = ConfigurationString.EmailClient;
+
+			if (emailClient == null)
+				return "";
+
+			MailMessage message = new(
+				from: emailClient,
 				to: mail,
 				mailTitle,
 				mailContent
@@ -47,17 +52,17 @@ namespace TicketBooking.API.Services
 			return code;
 		}
 
-		private string GetMailTitle(string name)
+		private static string GetMailTitle(string name)
 		{
 			return $"[EventBooking] {name.ToUpper()}'S PAYMENT INFORMATION";
 		}
 
-		private string GetCode()
+		private static string GetCode()
 		{
 			return new Random().Next(100000, 999999).ToString();
 		}
 
-		private string GetMailContent(string name, string code, string mail)
+		private static string GetMailContent(string name, string code, string mail)
 		{
 			return
 			@$"<html lang=""en"">

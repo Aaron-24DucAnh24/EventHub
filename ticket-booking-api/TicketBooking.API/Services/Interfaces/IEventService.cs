@@ -10,7 +10,7 @@ namespace TicketBooking.API.Services
 		public Event? GetEvent(string id);
 		public EventDetailResponse? GetEventDetail(string eventId);
 		public Task<bool> CreateEvent(EventRequest eventRequest);
-		public bool SetPublished(string eventId);
-		public Task<bool> DeleteEvent(string eventId);
+		public bool SetPublished(Event e);
+		public Task<bool> DeleteEvent(Event e);
   }
 }

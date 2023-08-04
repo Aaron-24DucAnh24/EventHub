@@ -20,22 +20,15 @@ namespace TicketBooking.API.Services
 
 		public List<InvoiceResponse>? GetInvoices(string mail)
 		{
-			var invoices = _invoiceRepository.GetInvoices(mail);
-
-			if(invoices == null)
-			{
-				return null;
-			}
-
-			var result = new List<InvoiceResponse>();
+			List<Invoice> invoices = _invoiceRepository.GetInvoices(mail);
+			List<InvoiceResponse> result = new();
 
 			if (invoices.Count == 0)
 				return result;
 
-
 			foreach (var invoice in invoices)
 			{
-				var invoiceResponse = new InvoiceResponse
+				InvoiceResponse invoiceResponse = new()
 				{
 					EventId = invoice.EventId,
 					Title = invoice.Event.Title,
@@ -50,18 +43,17 @@ namespace TicketBooking.API.Services
 
 				foreach (var seat in invoice.Seats)
 				{
-					var seatEvent = _seatRepository.GetSeatEvent(seat.Id, invoice.EventId);
-
-					var seatInvoice = new SeatInInvoice()
+					SeatEvent? seatEvent = _seatRepository.GetSeatEvent(seat.Id, invoice.EventId);
+					if(seatEvent != null)
 					{
-						Name = seat.Name,
-						Type = seat.Type,
-						Price = seatEvent.Price,
-					};
-
-					invoiceResponse.Seats.Add(seatInvoice);
+						invoiceResponse.Seats.Add(new SeatInInvoice()
+						{
+							Name = seat.Name,
+							Type = seat.Type,
+							Price = seatEvent.Price,
+						});
+					}
 				}
-
 				result.Add(invoiceResponse);
 			}
 
@@ -72,7 +64,7 @@ namespace TicketBooking.API.Services
 		{
 			var invoiceId = Guid.NewGuid().ToString();
 
-			var invoice = new Invoice()
+			Invoice invoice = new()
 			{
 				Id = invoiceId,
 				Name = invoiceRequest.FullName,
@@ -93,12 +85,12 @@ namespace TicketBooking.API.Services
 
 		public bool ValidateInvoice(string invoiceId, string code)
 		{
-			var invoice = _invoiceRepository.GetInvoiceWithCode(invoiceId, code);
+			Invoice? invoice = _invoiceRepository.GetInvoiceWithCode(invoiceId, code);
 
 			if (invoice == null)
 				return false;
 
-			var updateSeatEvent = UpdateSeatEvent(invoice.Seats.ToList(), invoice.EventId);
+			bool updateSeatEvent = UpdateSeatEvent(invoice.Seats.ToList(), invoice.EventId);
 
 			if (!updateSeatEvent)
 				return false;
@@ -126,14 +118,14 @@ namespace TicketBooking.API.Services
 
 		private bool UpdateSeatEvent(List<Seat> seats, string eventId)
 		{
-			var seatIds = new List<string>();
+			List<string> seatIds = new();
 
 			foreach (var seat in seats)
 			{
 				seatIds.Add(seat.Id);
 			}
 
-			var seatEvents = _seatRepository.GetSeatEvents(seatIds, eventId);
+			List<SeatEvent> seatEvents = _seatRepository.GetSeatEvents(seatIds, eventId);
 
 			foreach (var seatEvent in seatEvents)
 			{

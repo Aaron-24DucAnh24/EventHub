@@ -20,36 +20,31 @@ namespace TicketBooking.API.DBContext
       string eventCategoryJson = eventCategoryReader.ReadToEnd();
       string seatEventJson = seatEventReader.ReadToEnd();
 
-      var categories = JsonSerializer.Deserialize<List<Category>>(categoriesJson);
-      var events = JsonSerializer.Deserialize<List<Event>>(eventJson);
-      var seats = JsonSerializer.Deserialize<List<Seat>>(seatJson);
-      var eventCategories = JsonSerializer.Deserialize<List<EventCategory>>(eventCategoryJson);
-      var seatEvents = JsonSerializer.Deserialize<List<SeatEvent>>(seatEventJson);
+      List<Category>? categories = JsonSerializer.Deserialize<List<Category>>(categoriesJson);
+      List<Event>? events = JsonSerializer.Deserialize<List<Event>>(eventJson);
+      List<Seat>? seats = JsonSerializer.Deserialize<List<Seat>>(seatJson);
+      List<EventCategory>? eventCategories = JsonSerializer.Deserialize<List<EventCategory>>(eventCategoryJson);
+      List<SeatEvent>? seatEvents = JsonSerializer.Deserialize<List<SeatEvent>>(seatEventJson);
 
-      foreach(var category in categories)
-      {
-        modelBuilder.Entity<Category>().HasData(category);
-      }
+      if(categories != null)
+        foreach(var category in categories)
+          modelBuilder.Entity<Category>().HasData(category);
 
-      foreach(var e in events)
-      {
-        modelBuilder.Entity<Event>().HasData(e);
-      }
+      if(events != null)
+        foreach(var e in events)
+          modelBuilder.Entity<Event>().HasData(e);
 
-      foreach(var seat in seats)
-      {
-        modelBuilder.Entity<Seat>().HasData(seat);
-      }
+      if(seats != null)
+        foreach(var seat in seats)
+          modelBuilder.Entity<Seat>().HasData(seat);
 
-      foreach (var seatEvent in seatEvents)
-      {
-        modelBuilder.Entity<SeatEvent>().HasData(seatEvent);
-      }
+      if(seatEvents != null)
+        foreach (var seatEvent in seatEvents)
+          modelBuilder.Entity<SeatEvent>().HasData(seatEvent);
 
-      foreach (var eventCategory in eventCategories)
-      {
-        modelBuilder.Entity<EventCategory>().HasData(eventCategory);
-      }
+      if(eventCategories != null)
+        foreach (var eventCategory in eventCategories)
+          modelBuilder.Entity<EventCategory>().HasData(eventCategory);
     }
   }
 }

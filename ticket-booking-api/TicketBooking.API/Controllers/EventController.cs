@@ -71,7 +71,7 @@ namespace TicketBooking.API.Controller
 				return NotFound();
 			}
 
-			if (!await _eventService.DeleteEvent(eventId))
+			if (!await _eventService.DeleteEvent(e))
 			{
 				return Problem(ResponseStatus.DeleteError);
 			}
@@ -94,7 +94,7 @@ namespace TicketBooking.API.Controller
 				return NotFound();
 			}
 
-			if (!_eventService.SetPublished(eventId))
+			if (!_eventService.SetPublished(e))
 			{
 				return Problem(ResponseStatus.UpdateError);
 			}
