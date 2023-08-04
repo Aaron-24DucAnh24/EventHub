@@ -3,7 +3,6 @@ using TicketBooking.API.Services;
 using TicketBooking.API.Dtos;
 using TicketBooking.API.Helper;
 using TicketBooking.API.Models;
-using TicketBooking.API.Helper;
 using AutoMapper;
 using FluentValidation;
 using FluentValidation.Results;
