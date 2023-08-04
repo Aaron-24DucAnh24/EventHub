@@ -3,7 +3,6 @@ using TicketBooking.API.Services;
 using TicketBooking.API.Dtos;
 using TicketBooking.API.Helper;
 using TicketBooking.API.Models;
-using AutoMapper;
 using FluentValidation;
 using FluentValidation.Results;
 
@@ -15,18 +14,16 @@ namespace TicketBooking.API.Controller
 	{
 		private readonly IEventService _eventService;
 		private readonly ICacheService _cacheService;
-		private readonly IMapper _mapper;
 		private readonly IValidator<EventRequest> _validator; 
 
 		public EventController(
 			IEventService eventService,
 			ICacheService cacheService,
-			IValidator<EventRequest> validator,
-			IMapper mapper)
+			IValidator<EventRequest> validator
+		)
 		{
 			_eventService = eventService;
 			_cacheService = cacheService;
-			_mapper = mapper;
 			_validator = validator;
 		}
 
@@ -34,15 +31,15 @@ namespace TicketBooking.API.Controller
 		[ProducesResponseType(200, Type = typeof(IEnumerable<EventResponse>))]
 		public ActionResult GetEvents([FromQuery] bool IsPublished)
 		{
-			var cacheKey = IsPublished ? CacheKeys.PublishedEvents : CacheKeys.UnPublishedEvents;
-			var events = _cacheService.GetData<List<EventResponse>>(cacheKey);
+			string cacheKey = IsPublished ? CacheKeys.PublishedEvents : CacheKeys.UnPublishedEvents;
+			ICollection<EventResponse>? events = _cacheService.GetData<ICollection<EventResponse>>(cacheKey);
 
 			if (events != null && events.Count > 0)
 				return Ok(events);
 
 			events = IsPublished
-				? _mapper.Map<List<EventResponse>>(_eventService.GetPublishedEvents())
-				: _mapper.Map<List<EventResponse>>(_eventService.GetUnPublishedEvents());
+				? _eventService.GetPublishedEvents()
+				: _eventService.GetUnPublishedEvents();
 
 			_cacheService.SetData(cacheKey, events, DateTimeOffset.Now.AddMinutes(2));
 
@@ -54,12 +51,12 @@ namespace TicketBooking.API.Controller
 		[ProducesResponseType(400)]
 		public ActionResult GetEvent(string eventId)
 		{
-			var e = _eventService.GetEventDetail(eventId);
+			EventDetailResponse? e = _eventService.GetEventDetail(eventId);
 
 			if (e == null)
 				return NotFound();
 
-			return Ok(_mapper.Map<EventDetailResponse>(e));
+			return Ok(e);
 		}
 
 		[HttpDelete("{eventId}")]

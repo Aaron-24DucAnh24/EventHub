@@ -13,8 +13,10 @@ namespace TicketBooking.API.Helper
       CreateMap<Event, EventDetailResponse>();
 
       CreateMap<Category, CategoryResponse>();
-      
-      CreateMap<Invoice, InvoiceRequest>();
+
+      CreateMap<SeatEvent, SeatEventResponse>();
+
+      CreateMap<Seat, SeatResponse>();
     }
   }
 }

@@ -45,21 +45,21 @@ namespace TicketBooking.API.Services
 					Location = invoice.Event.Location,
 					Duration = invoice.Event.Duration,
 					Image = invoice.Event.Image,
-					Seats = new List<SeatResponse>(),
+					Seats = new List<SeatInInvoice>(),
 				};
 
 				foreach (var seat in invoice.Seats)
 				{
 					var seatEvent = _seatRepository.GetSeatEvent(seat.Id, invoice.EventId);
 
-					var seatResponse = new SeatResponse()
+					var seatInvoice = new SeatInInvoice()
 					{
 						Name = seat.Name,
 						Type = seat.Type,
 						Price = seatEvent.Price,
 					};
 
-					invoiceResponse.Seats.Add(seatResponse);
+					invoiceResponse.Seats.Add(seatInvoice);
 				}
 
 				result.Add(invoiceResponse);

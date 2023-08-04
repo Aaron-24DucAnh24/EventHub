@@ -15,6 +15,6 @@ namespace TicketBooking.API.Dtos
     public string Location { get; set; }
     public string? City { get; set; }
     public EventStatus Status { get; set; }
-    public ICollection<Category> Categories { get; set;}
+    public ICollection<CategoryResponse> Categories { get; set;}
   }
 }

@@ -16,7 +16,7 @@ namespace TicketBooking.API.Dtos
     public string? City { get; set; }
     public EventStatus Status { get; set; }
     public string Duration { get; set; }
-    public ICollection<Category> Categories { get; set;}
-    public ICollection<SeatEvent> SeatEvents{ get; set;} 
+    public ICollection<CategoryResponse> Categories { get; set;}
+    public ICollection<SeatEventResponse> SeatEvents{ get; set;} 
   }
 }

@@ -10,6 +10,6 @@ namespace TicketBooking.API.Dtos
     public string Location { get; set; }
     public string Duration { get; set; }
 		public string InvoiceId { get; set; }
-    public List<SeatResponse> Seats { get; set; }
+    public List<SeatInInvoice> Seats { get; set; }
   }
 }
