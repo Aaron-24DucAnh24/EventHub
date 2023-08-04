@@ -1,4 +1,4 @@
-namespace TicketBooking.API.Dto
+namespace TicketBooking.API.Dtos
 {
 	public class CategoryResponse
 	{

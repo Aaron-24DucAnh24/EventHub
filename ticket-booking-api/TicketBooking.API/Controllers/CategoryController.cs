@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
-using TicketBooking.API.Dto;
+using TicketBooking.API.Dtos;
 using TicketBooking.API.Services;
 using TicketBooking.API.Helper;
 

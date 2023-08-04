@@ -1,7 +1,7 @@
 using TicketBooking.API.Models;
 using TicketBooking.API.Enum;
 
-namespace TicketBooking.API.Dto
+namespace TicketBooking.API.Dtos
 {
   public class EventDetailResponse
   {

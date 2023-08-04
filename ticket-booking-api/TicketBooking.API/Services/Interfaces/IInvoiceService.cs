@@ -1,4 +1,4 @@
-using TicketBooking.API.Dto;
+using TicketBooking.API.Dtos;
 namespace TicketBooking.API.Services
 {
 	public interface IInvoiceService

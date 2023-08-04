@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TicketBooking.API.DBContext;
-using TicketBooking.API.Dto;
+using TicketBooking.API.Dtos;
 using TicketBooking.API.Enum;
 using TicketBooking.API.Models;
 

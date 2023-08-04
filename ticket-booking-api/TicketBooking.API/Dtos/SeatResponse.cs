@@ -1,6 +1,6 @@
 using TicketBooking.API.Enum;
 
-namespace TicketBooking.API.Dto
+namespace TicketBooking.API.Dtos
 {
   public class SeatResponse
   {

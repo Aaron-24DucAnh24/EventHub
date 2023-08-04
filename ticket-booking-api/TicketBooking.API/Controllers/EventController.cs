@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using TicketBooking.API.Services;
-using TicketBooking.API.Dto;
+using TicketBooking.API.Dtos;
+using TicketBooking.API.Helper;
+using TicketBooking.API.Models;
 using TicketBooking.API.Helper;
 using AutoMapper;
-using TicketBooking.API.Models;
+using FluentValidation;
+using FluentValidation.Results;
 
 namespace TicketBooking.API.Controller
 {
@@ -14,15 +17,18 @@ namespace TicketBooking.API.Controller
 		private readonly IEventService _eventService;
 		private readonly ICacheService _cacheService;
 		private readonly IMapper _mapper;
+		private readonly IValidator<EventRequest> _validator; 
 
 		public EventController(
 			IEventService eventService,
 			ICacheService cacheService,
+			IValidator<EventRequest> validator,
 			IMapper mapper)
 		{
 			_eventService = eventService;
 			_cacheService = cacheService;
 			_mapper = mapper;
+			_validator = validator;
 		}
 
 		[HttpGet]
@@ -52,14 +58,7 @@ namespace TicketBooking.API.Controller
 			var e = _eventService.GetEventDetail(eventId);
 
 			if (e == null)
-			{
 				return NotFound();
-			}
-
-			if (!ModelState.IsValid)
-			{
-				return BadRequest(ModelState);
-			}
 
 			return Ok(_mapper.Map<EventDetailResponse>(e));
 		}
@@ -70,11 +69,6 @@ namespace TicketBooking.API.Controller
 		public async Task<ActionResult> DeleteEvent(string eventId)
 		{
 			var e = _eventService.GetEvent(eventId);
-
-			if (!ModelState.IsValid)
-			{
-				return BadRequest(ModelState);
-			}
 
 			if (e == null)
 			{
@@ -104,11 +98,6 @@ namespace TicketBooking.API.Controller
 				return NotFound();
 			}
 
-			if (!ModelState.IsValid)
-			{
-				return BadRequest(ModelState);
-			}
-
 			if (!_eventService.SetPublished(eventId))
 			{
 				return Problem(ResponseStatus.UpdateError);
@@ -124,14 +113,13 @@ namespace TicketBooking.API.Controller
 		[ProducesResponseType(400)]
 		public async Task<ActionResult> CreateEvent([FromForm] EventRequest eventRequest)
 		{
-			if (!ModelState.IsValid)
-				return BadRequest();
+			ValidationResult validationResult = await _validator.ValidateAsync(eventRequest);
 
-			if (
-				eventRequest.Image.ContentType != "image/jpeg"
-				&& eventRequest.Image.ContentType != "image/png"
-				&& eventRequest.Image.ContentType != "image/jpg")
-				return BadRequest();
+			if (!validationResult.IsValid)
+			{
+				validationResult.AddToModelState(ModelState);
+				return BadRequest(ModelState);
+			}
 
 			var result = await _eventService.CreateEvent(eventRequest);
 

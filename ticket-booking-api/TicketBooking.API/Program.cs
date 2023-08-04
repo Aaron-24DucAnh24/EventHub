@@ -2,6 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using TicketBooking.API.DBContext;
 using TicketBooking.API.Services;
 using TicketBooking.API.Repository;
+using FluentValidation;
+using TicketBooking.API.Dtos.Validators;
+using TicketBooking.API.Dtos;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +29,8 @@ builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ISeatRepository, SeatRepository>();
 builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 
+builder.Services.AddScoped<IValidator<EventRequest>, EventRequestValidator>();
+builder.Services.AddScoped<IValidator<InvoiceRequest>, InvoiceRequestValidator>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddCors(options =>
