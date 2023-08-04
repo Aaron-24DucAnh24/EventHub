@@ -7,5 +7,6 @@ namespace TicketBooking.API.Helper
     static public string UpdateError { get; } = "Something wrong while updating";
     static public string DeleteError { get; } = "Something wrong while deleting";
     static public string ServiceError { get; } = "Something wrong while running service";
+    static public string InvalidRequestParam { get; } = "Invalid request parameter";
   }
 }

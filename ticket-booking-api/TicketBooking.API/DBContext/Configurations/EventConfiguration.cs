@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TicketBooking.API.Models;
 using TicketBooking.API.Enum;
 
-namespace TicketBooking.API.Configurations
+namespace TicketBooking.API.DBContext.Configuration
 {
   public class EventConfiguration: IEntityTypeConfiguration<Event>
   {

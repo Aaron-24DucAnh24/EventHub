@@ -1,4 +1,4 @@
-using TicketBooking.API.Dto;
+using TicketBooking.API.Dtos;
 using TicketBooking.API.Models;
 
 namespace TicketBooking.API.Repository

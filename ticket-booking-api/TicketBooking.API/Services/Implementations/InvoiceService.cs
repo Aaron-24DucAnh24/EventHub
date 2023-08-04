@@ -1,4 +1,4 @@
-using TicketBooking.API.Dto;
+using TicketBooking.API.Dtos;
 using TicketBooking.API.Models;
 using TicketBooking.API.Enum;
 using TicketBooking.API.Repository;
@@ -21,6 +21,11 @@ namespace TicketBooking.API.Services
 		public List<InvoiceResponse>? GetInvoices(string mail)
 		{
 			var invoices = _invoiceRepository.GetInvoices(mail);
+
+			if(invoices == null)
+			{
+				return null;
+			}
 
 			var result = new List<InvoiceResponse>();
 

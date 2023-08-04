@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using TicketBooking.API.Dto;
+using TicketBooking.API.Dtos;
 using TicketBooking.API.Helper;
 using TicketBooking.API.Services;
+using FluentValidation;
+using FluentValidation.Results;
 
 namespace TicketBooking.API.Controller
 {
@@ -11,24 +13,27 @@ namespace TicketBooking.API.Controller
 	{
 		private readonly IInvoiceService _invoicesService;
 		private readonly IEmailValidationService _emailValidationService;
+		private readonly IValidator<InvoiceRequest> _validator;
 
 		public InvoiceController(
 			IInvoiceService invoicesService,
-			IEmailValidationService emailValidationService
+			IEmailValidationService emailValidationService,
+			IValidator<InvoiceRequest> validator
 		)
 		{
 			_invoicesService = invoicesService;
 			_emailValidationService = emailValidationService;
+			_validator = validator;
 		}
 
 		[HttpGet("{mail}")]
 		[ProducesResponseType(200, Type = typeof(List<InvoiceResponse>))]
 		public ActionResult GetInvoice(string mail)
 		{
-			var result = _invoicesService.GetInvoices(mail);
+			List<InvoiceResponse>? result = _invoicesService.GetInvoices(mail);
 
-			if(!ModelState.IsValid)
-				return BadRequest(ModelState);
+			if(result ==null)
+				return NotFound();
 
 			return Ok(result);	
 		}
@@ -37,6 +42,14 @@ namespace TicketBooking.API.Controller
 		[ProducesResponseType(204, Type = typeof(string))]
 		public async Task<ActionResult> AddInvoice(InvoiceRequest invoiceRequest)
 		{
+			ValidationResult validationResult = await _validator.ValidateAsync(invoiceRequest);
+
+			if(!validationResult.IsValid)
+			{
+				validationResult.AddToModelState(ModelState);
+				return BadRequest(ModelState);
+			}
+
 			string code = await _emailValidationService.SendValidationCode(
 				invoiceRequest.FullName,
 				invoiceRequest.Mail
@@ -55,9 +68,6 @@ namespace TicketBooking.API.Controller
 				return BadRequest(ModelState);
 			}
 
-			if (!ModelState.IsValid)
-				return BadRequest(ModelState);
-
 			return Ok(invoiceId);
 		}
 
@@ -67,13 +77,16 @@ namespace TicketBooking.API.Controller
 				[FromQuery] string invoiceId,
 				[FromQuery] string code)
 		{
+			if (string.IsNullOrEmpty(invoiceId) || string.IsNullOrEmpty(code))
+			{
+				ModelState.AddModelError("", ResponseStatus.InvalidRequestParam);
+				return BadRequest();
+			}
+
 			bool result = _invoicesService.ValidateInvoice(invoiceId, code);
 
 			if (!result)
 				return Problem(ResponseStatus.UpdateError);
-
-			if (!ModelState.IsValid)
-				return BadRequest(ModelState);
 
 			return Ok(result.ToString());
 		}

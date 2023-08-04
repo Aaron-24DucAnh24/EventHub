@@ -1,9 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.IdentityModel.Tokens;
 using TicketBooking.API.Models;
 
-namespace TicketBooking.API.Configurations
+namespace TicketBooking.API.DBContext.Configuration
 {
   public class CategoryConfiguration: IEntityTypeConfiguration<Category>
   {

@@ -4,7 +4,7 @@ using TicketBooking.API.Models;
 
 namespace TicketBooking.API.DBContext
 {
-  public class ApplicationDbContextSeeding
+  public class DbContextSeeding
   {
     public static void Run(ref ModelBuilder modelBuilder)
     {

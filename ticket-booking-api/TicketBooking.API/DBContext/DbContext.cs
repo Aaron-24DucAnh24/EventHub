@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using TicketBooking.API.Configurations;
+using TicketBooking.API.DBContext.Configuration;
 using TicketBooking.API.Models;
 
 namespace TicketBooking.API.DBContext
@@ -18,7 +18,7 @@ namespace TicketBooking.API.DBContext
       modelBuilder.ApplyConfiguration(new SeatEventConfiguration());
       modelBuilder.ApplyConfiguration(new SeatInvoiceConfiguration());
       
-      ApplicationDbContextSeeding.Run(ref modelBuilder);
+      DbContextSeeding.Run(ref modelBuilder);
     }
 
     public DbSet<Event> Events { get; set; }

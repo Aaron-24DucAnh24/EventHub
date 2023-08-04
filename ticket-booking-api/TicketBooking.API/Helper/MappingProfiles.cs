@@ -1,5 +1,5 @@
 using AutoMapper;
-using TicketBooking.API.Dto;
+using TicketBooking.API.Dtos;
 using TicketBooking.API.Models;
 
 namespace TicketBooking.API.Helper
@@ -9,8 +9,11 @@ namespace TicketBooking.API.Helper
     public MappingProfiles()
     {
       CreateMap<Event, EventResponse>();
+
       CreateMap<Event, EventDetailResponse>();
+
       CreateMap<Category, CategoryResponse>();
+      
       CreateMap<Invoice, InvoiceRequest>();
     }
   }
