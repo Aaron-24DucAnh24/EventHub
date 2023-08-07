@@ -41,7 +41,7 @@ namespace TicketBooking.API.Repository
 
     public Event? GetEvent(string id)
     {
-      var result = _dbContext.Events
+      Event? result = _dbContext.Events
         .Where(x => (x.Id == id) && (!x.IsDeleted))
         .Include(x => x.SeatEvents)
         .ThenInclude(x => x.Seat)
@@ -53,7 +53,7 @@ namespace TicketBooking.API.Repository
 
     public ICollection<Event> GetPublishedEvents()
     {
-      var result = _dbContext.Events
+      ICollection<Event> result = _dbContext.Events
         .Where(x => !x.IsDeleted && x.IsPublished)
         .Include(x => x.Categories)
         .OrderBy(x => x.Date)
@@ -64,7 +64,7 @@ namespace TicketBooking.API.Repository
 
     public ICollection<Event> GetUnPublishedEvents()
     {
-      var result = _dbContext.Events
+      ICollection<Event> result = _dbContext.Events
         .Where(x => !x.IsDeleted && !x.IsPublished)
         .Include(x => x.Categories)
         .ToList();

@@ -77,7 +77,7 @@ namespace TicketBooking.API.Services
 			if (!_invoiceRepository.AddInvoice(invoice))
 				return "";
 
-			if (!AddSeatInvoice(invoiceRequest.seatIds, invoiceId))
+			if (!AddSeatInvoice(invoiceRequest.SeatIds, invoiceId))
 				return "";
 
 			return invoiceId;

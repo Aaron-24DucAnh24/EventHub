@@ -13,7 +13,7 @@ namespace TicketBooking.API.Repository
     }
     public List<Category> GetCategories()
     {
-      var result = _dbContext.Categories.Where(c => !c.IsDeleted).ToList();
+      List<Category> result = _dbContext.Categories.Where(c => !c.IsDeleted).ToList();
       return result;
     }
 
