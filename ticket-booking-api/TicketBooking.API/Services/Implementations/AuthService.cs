@@ -13,27 +13,24 @@ namespace TicketBooking.API.Services
       _userRepository = userRepository;
     }
 
-    // public async AuthenticationResponse? LoginAsync(LoginRequest request)
-    // {
-    //   User? user = _userRepository.FindUser(request);
-
-    //   if (user == null)
-    //     return null;
-    // }
-
-    public async Task<string> RefreshTokenAsync(string token)
-    {
-      throw new NotImplementedException();
-    }
-
     public Task<AuthenticationResponse?> RegisterAsync(RegisterRequest request)
     {
       throw new NotImplementedException();
     }
 
-    Task<AuthenticationResponse?> IAuthService.LoginAsync(LoginRequest request)
+		public async Task<AuthenticationResponse?> LoginAsync(LoginRequest request)
+		{
+			//User? user = _userRepository.FindUser(request);
+
+			//if (user == null)
+			//  return null;
+
+			throw new NotImplementedException();
+		}
+
+		public async Task<string> RefreshTokenAsync(string token)
     {
       throw new NotImplementedException();
     }
-  }
+	}
 }

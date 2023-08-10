@@ -39,7 +39,7 @@ namespace TicketBooking.API.Controller
         return BadRequest(ModelState);
       }
 
-      AuthenticationResponse result = await _authService.RegisterAsync(request);
+      AuthenticationResponse? result = await _authService.RegisterAsync(request);
 
       if(result == null)
       {
@@ -62,7 +62,7 @@ namespace TicketBooking.API.Controller
         return BadRequest(ModelState);
       }
 
-      AuthenticationResponse result = await _authService.LoginAsync(request);
+      AuthenticationResponse? result = await _authService.LoginAsync(request);
 
       if(result == null)
       {
