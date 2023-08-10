@@ -73,11 +73,11 @@ namespace TicketBooking.API.Services
 			return _eventRepository.GetEvent(eventId);
 		}
 
-		public async Task<bool> CreateEvent(EventRequest eventRequest)
+		public async Task<bool> CreateEventAsync(EventRequest eventRequest)
 		{
 			var newEventId = Guid.NewGuid().ToString();
 
-			string imgUrl = await _blobService.UpLoadImage(eventRequest.Image, newEventId);
+			string imgUrl = await _blobService.UpLoadImageAsync(eventRequest.Image, newEventId);
 
 			Event newEvent = new()
       {
@@ -105,9 +105,9 @@ namespace TicketBooking.API.Services
 			return true;
 		}
 
-		public async Task<bool> DeleteEvent(Event e)
+		public async Task<bool> DeleteEventAsync(Event e)
 		{
-			await _blobService.RemoveImage(e.Id);
+			await _blobService.RemoveImageAsync(e.Id);
 			return _eventRepository.DeleteEvent(e.Id);
 		}
 

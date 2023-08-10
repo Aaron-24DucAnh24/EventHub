@@ -1,8 +1,7 @@
 using AutoMapper;
-using TicketBooking.API.Dtos;
 using TicketBooking.API.Models;
 
-namespace TicketBooking.API.Helper
+namespace TicketBooking.API.Dtos.MappingProfiles
 {
   public class MappingProfiles: Profile
   {

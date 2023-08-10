@@ -9,8 +9,8 @@ namespace TicketBooking.API.Services
 		public ICollection<EventResponse> GetUnPublishedEvents();
 		public Event? GetEvent(string id);
 		public EventDetailResponse? GetEventDetail(string eventId);
-		public Task<bool> CreateEvent(EventRequest eventRequest);
+		public Task<bool> CreateEventAsync(EventRequest eventRequest);
 		public bool SetPublished(Event e);
-		public Task<bool> DeleteEvent(Event e);
+		public Task<bool> DeleteEventAsync(Event e);
   }
 }

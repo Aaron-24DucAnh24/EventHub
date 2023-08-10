@@ -1,20 +1,25 @@
 using TicketBooking.API.Repository;
-using TicketBooking.API.Models;
+using TicketBooking.API.Dtos;
+using AutoMapper;
 
 namespace TicketBooking.API.Services
 {
 	public class CategoryService : ICategoryService
 	{
 		private readonly ICategoryRepository _categoryRepository;
+		private readonly IMapper _mapper;
 
-		public CategoryService(ICategoryRepository categoryRepository)
+		public CategoryService(
+			ICategoryRepository categoryRepository,
+			IMapper mapper)
 		{
 			_categoryRepository = categoryRepository;
+			_mapper = mapper;
 		}
 
-		public List<Category> GetCategories()
+		public List<CategoryResponse> GetCategories()
 		{
-			return _categoryRepository.GetCategories();
+			return _mapper.Map<List<CategoryResponse>>(_categoryRepository.GetCategories());
 		}
   }
 }

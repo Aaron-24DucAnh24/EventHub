@@ -3,8 +3,10 @@ using TicketBooking.API.Services;
 using TicketBooking.API.Dtos;
 using TicketBooking.API.Helper;
 using TicketBooking.API.Models;
+using TicketBooking.API.Constants;
 using FluentValidation;
 using FluentValidation.Results;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TicketBooking.API.Controller
 {
@@ -14,7 +16,7 @@ namespace TicketBooking.API.Controller
 	{
 		private readonly IEventService _eventService;
 		private readonly ICacheService _cacheService;
-		private readonly IValidator<EventRequest> _validator; 
+		private readonly IValidator<EventRequest> _validator;
 
 		public EventController(
 			IEventService eventService,
@@ -28,10 +30,10 @@ namespace TicketBooking.API.Controller
 		}
 
 		[HttpGet]
-		[ProducesResponseType(200, Type = typeof(IEnumerable<EventResponse>))]
+		[AllowAnonymous]
 		public ActionResult GetEvents([FromQuery] bool IsPublished)
 		{
-			string cacheKey = IsPublished ? CacheKeys.PublishedEvents : CacheKeys.UnPublishedEvents;
+			string cacheKey = IsPublished ? CacheKeys.PUBLISHED_EVENTS : CacheKeys.UNPUBLISHED_EVENTS;
 			ICollection<EventResponse>? events = _cacheService.GetData<ICollection<EventResponse>>(cacheKey);
 
 			if (events != null && events.Count > 0)
@@ -47,8 +49,7 @@ namespace TicketBooking.API.Controller
 		}
 
 		[HttpGet("{eventId}")]
-		[ProducesResponseType(200, Type = typeof(IEnumerable<EventDetailResponse>))]
-		[ProducesResponseType(400)]
+		[AllowAnonymous]
 		public ActionResult GetEvent(string eventId)
 		{
 			EventDetailResponse? e = _eventService.GetEventDetail(eventId);
@@ -60,9 +61,8 @@ namespace TicketBooking.API.Controller
 		}
 
 		[HttpDelete("{eventId}")]
-		[ProducesResponseType(200, Type = typeof(string))]
-		[ProducesResponseType(400)]
-		public async Task<ActionResult> DeleteEvent(string eventId)
+		[AllowAnonymous]
+		public async Task<ActionResult> DeleteEventAsync(string eventId)
 		{
 			var e = _eventService.GetEvent(eventId);
 
@@ -71,20 +71,19 @@ namespace TicketBooking.API.Controller
 				return NotFound();
 			}
 
-			if (!await _eventService.DeleteEvent(e))
+			if (!await _eventService.DeleteEventAsync(e))
 			{
-				return Problem(ResponseStatus.DeleteError);
+				return Problem(ResponseStatus.DELETE_ERROR);
 			}
 
-			_cacheService.RemoveData(CacheKeys.PublishedEvents);
-			_cacheService.RemoveData(CacheKeys.UnPublishedEvents);
+			_cacheService.RemoveData(CacheKeys.PUBLISHED_EVENTS);
+			_cacheService.RemoveData(CacheKeys.UNPUBLISHED_EVENTS);
 
-			return Ok(ResponseStatus.Success);
+			return Ok(ResponseStatus.SUCCESS);
 		}
 
 		[HttpPut("{eventId}")]
-		[ProducesResponseType(200, Type = typeof(string))]
-		[ProducesResponseType(400)]
+		[AllowAnonymous]
 		public ActionResult SetPublished(string eventId)
 		{
 			Event? e = _eventService.GetEvent(eventId);
@@ -96,18 +95,17 @@ namespace TicketBooking.API.Controller
 
 			if (!_eventService.SetPublished(e))
 			{
-				return Problem(ResponseStatus.UpdateError);
+				return Problem(ResponseStatus.UPDATE_ERROR);
 			}
 
-			_cacheService.RemoveData(CacheKeys.PublishedEvents);
+			_cacheService.RemoveData(CacheKeys.PUBLISHED_EVENTS);
 
-			return Ok(ResponseStatus.Success);
+			return Ok(ResponseStatus.SUCCESS);
 		}
 
 		[HttpPost]
-		[ProducesResponseType(204, Type = typeof(string))]
-		[ProducesResponseType(400)]
-		public async Task<ActionResult> CreateEvent([FromForm] EventRequest eventRequest)
+		[AllowAnonymous]
+		public async Task<ActionResult> CreateEventAsync([FromForm] EventRequest eventRequest)
 		{
 			ValidationResult validationResult = await _validator.ValidateAsync(eventRequest);
 
@@ -117,17 +115,17 @@ namespace TicketBooking.API.Controller
 				return BadRequest(ModelState);
 			}
 
-			var result = await _eventService.CreateEvent(eventRequest);
+			var result = await _eventService.CreateEventAsync(eventRequest);
 
 			if (!result)
 			{
-				ModelState.AddModelError("", ResponseStatus.AddError);
+				ModelState.AddModelError("", ResponseStatus.ADD_ERROR);
 				return BadRequest(ModelState);
 			}
 
-			_cacheService.RemoveData(CacheKeys.UnPublishedEvents);
+			_cacheService.RemoveData(CacheKeys.UNPUBLISHED_EVENTS);
 
-			return Ok(ResponseStatus.Success);
+			return Ok(ResponseStatus.SUCCESS);
 		}
 	}
 }

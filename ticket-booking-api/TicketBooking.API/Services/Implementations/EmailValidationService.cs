@@ -22,7 +22,7 @@ namespace TicketBooking.API.Services
 			};
 		}
 
-		public async Task<string> SendValidationCode(string fullName, string mail)
+		public async Task<string> SendValidationCodeAsync(string fullName, string mail)
 		{
 			string code = GetCode();
 			string mailTitle = GetMailTitle(fullName);
