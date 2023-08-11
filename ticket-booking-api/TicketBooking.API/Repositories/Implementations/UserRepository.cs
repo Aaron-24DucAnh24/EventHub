@@ -14,24 +14,16 @@ namespace TicketBooking.API.Repository
       _dbContext = dbContext;
     }
 
-    public async Task<bool> CreateUserAsync(RegisterRequest request)
+    public async Task<bool> CreateUserAsync(User user)
     {
-      User user = new()
-      {
-        Id = Guid.NewGuid().ToString(),
-        Name = request.Name,
-        Email = HashHelper.GetHash(request.Email),
-        Password = HashHelper.GetHash(request.Password)
-      };
       await _dbContext.AddAsync(user);
       return await _dbContext.SaveChangesAsync() != 0;
     }
 
-    public User? FindUser(LoginRequest request)
+    public User? FindUser(string email)
     {
       User? user = _dbContext.Users
-        .Where(x => HashHelper.CompareHash(x.Email, request.Email))
-        .Where(x => HashHelper.CompareHash(x.Password, request.Password))
+        .Where(x => x.Email == email)
         .FirstOrDefault();
 
       return user;

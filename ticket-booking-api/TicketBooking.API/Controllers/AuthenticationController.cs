@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TicketBooking.API.Dtos;
 using TicketBooking.API.Services;
-using TicketBooking.API.Helper;
+using TicketBooking.API.Extensions;
 using TicketBooking.API.Constants;
 
 namespace TicketBooking.API.Controller
@@ -43,7 +43,7 @@ namespace TicketBooking.API.Controller
 
       if(result == null)
       {
-        ModelState.AddModelError("", ResponseStatus.AUTHENTICATION_ERROR);
+        ModelState.AddModelError("", ResponseStatus.AUTHENTICATION_DUPLICATE);
         return BadRequest(ModelState);
       }
 
@@ -66,7 +66,7 @@ namespace TicketBooking.API.Controller
 
       if(result == null)
       {
-        ModelState.AddModelError("", ResponseStatus.AUTHENTICATION_ERROR);
+        ModelState.AddModelError("", ResponseStatus.AUTHENTICATION_INCORRECT);
         return BadRequest(ModelState);
       }
 
@@ -77,7 +77,14 @@ namespace TicketBooking.API.Controller
     [AllowAnonymous]
     public async Task<ActionResult<string>> RefreshTokenAsync([FromBody] string refreshToken)
     {
-      return Ok("string");
+      return Ok(await _authService.RefreshTokenAsync(refreshToken));
+    }
+
+    [HttpGet("test-authentication")]
+    [Authorize]
+    public ActionResult<string> TestAuthentication()
+    {
+      return Ok("Success");
     }
   }
 }

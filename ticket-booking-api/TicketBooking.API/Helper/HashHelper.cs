@@ -1,5 +1,3 @@
-using System.Text;
-
 namespace TicketBooking.API.Helper
 {
   public class HashHelper
@@ -11,7 +9,7 @@ namespace TicketBooking.API.Helper
 
     public static bool CompareHash(string attemptedPassword, string hashedPassword)
     {
-      return true;
+      return attemptedPassword == hashedPassword;
     }
   }
 }

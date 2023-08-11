@@ -11,13 +11,13 @@ namespace TicketBooking.API.Services
 		public EmailValidationService()
 		{
 
-			_smtpClient = new SmtpClient(ConfigurationString.SmtpClient, 587)
+			_smtpClient = new SmtpClient(ConfigurationHelper.SmtpClient, 587)
 			{
 				EnableSsl = true,
 				UseDefaultCredentials = false,
 				Credentials = new NetworkCredential(
-					ConfigurationString.EmailClient,
-					ConfigurationString.EmailPassword
+					ConfigurationHelper.EmailClient,
+					ConfigurationHelper.EmailPassword
 				)
 			};
 		}
@@ -27,7 +27,7 @@ namespace TicketBooking.API.Services
 			string code = GetCode();
 			string mailTitle = GetMailTitle(fullName);
 			string mailContent = GetMailContent(fullName, code, mail);
-			string? emailClient = ConfigurationString.EmailClient;
+			string? emailClient = ConfigurationHelper.EmailClient;
 
 			if (emailClient == null)
 				return "";

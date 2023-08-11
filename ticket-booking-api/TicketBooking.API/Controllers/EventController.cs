@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TicketBooking.API.Services;
 using TicketBooking.API.Dtos;
-using TicketBooking.API.Helper;
+using TicketBooking.API.Extensions;
 using TicketBooking.API.Models;
 using TicketBooking.API.Constants;
 using FluentValidation;

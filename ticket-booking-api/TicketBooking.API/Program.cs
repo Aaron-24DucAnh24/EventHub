@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using TicketBooking.API;
+using TicketBooking.API.Extensions;
 using TicketBooking.API.DBContext;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +18,8 @@ builder.Services.AddRepositoryServices();
 
 builder.Services.AddCoreService();
 
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddDbContext<ApplicationDbContext>(option =>
 {
 	option.UseSqlServer(builder.Configuration.GetConnectionString("TicketBookingDatabase"));
@@ -32,6 +34,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseCors("public");
 
