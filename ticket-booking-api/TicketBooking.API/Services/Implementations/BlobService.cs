@@ -8,9 +8,9 @@ namespace TicketBooking.API.Services
 	{
 		public BlobService() {}
 
-		public async Task<string> UpLoadImage(IFormFile file, string name)
+		public async Task<string> UpLoadImageAsync(IFormFile file, string name)
 		{
-			string? connectionString = ConfigurationString.BlobStorage;
+			string? connectionString = ConfigurationHelper.BlobStorage;
 			BlobServiceClient blobServiceClient = new(connectionString);
 			BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("img");
 			Stream stream = file.OpenReadStream();
@@ -24,9 +24,9 @@ namespace TicketBooking.API.Services
 			return blobClient.Uri.ToString();
 		}
 
-		public async Task<bool> RemoveImage(string blogName)
+		public async Task<bool> RemoveImageAsync(string blogName)
 		{
-			string? connectionString = ConfigurationString.BlobStorage;
+			string? connectionString = ConfigurationHelper.BlobStorage;
 			BlobServiceClient blobServiceClient = new(connectionString);
 			BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("img");
 

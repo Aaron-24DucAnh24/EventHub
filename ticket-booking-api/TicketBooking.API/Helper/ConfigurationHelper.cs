@@ -1,8 +1,8 @@
 namespace TicketBooking.API.Helper
 {
-  public class ConfigurationString
+  public class ConfigurationHelper
   {
-    private static readonly IConfigurationRoot configuration = new ConfigurationBuilder()
+    public static readonly IConfigurationRoot configuration = new ConfigurationBuilder()
         .SetBasePath(Directory.GetCurrentDirectory())
         .AddJsonFile("appsettings.json")
         .Build();

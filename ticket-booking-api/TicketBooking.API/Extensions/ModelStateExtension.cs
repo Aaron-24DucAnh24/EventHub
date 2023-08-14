@@ -1,7 +1,7 @@
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-namespace TicketBooking.API.Helper
+namespace TicketBooking.API.Extensions
 {
   public static class ModelStateExtension
   {

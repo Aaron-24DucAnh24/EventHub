@@ -17,8 +17,10 @@ namespace TicketBooking.API.DBContext
       modelBuilder.ApplyConfiguration(new EventCategoryConfiguration());
       modelBuilder.ApplyConfiguration(new SeatEventConfiguration());
       modelBuilder.ApplyConfiguration(new SeatInvoiceConfiguration());
+      modelBuilder.ApplyConfiguration(new UserConfiguration());
+      modelBuilder.ApplyConfiguration(new UserConnectionConfiguration());
       
-      DbContextSeeding.Run(ref modelBuilder);
+      modelBuilder.AddDataSeeding();
     }
 
     public DbSet<Event> Events { get; set; }
@@ -28,5 +30,7 @@ namespace TicketBooking.API.DBContext
     public DbSet<SeatEvent> SeatEvents { get; set; }
     public DbSet<SeatInvoice> SeatInvoices { get; set; }
     public DbSet<EventCategory> EventCategories { get; set; }
+    public DbSet<User> Users { get; set; }
+    public DbSet<UserConnection> UserConnection { get; set; }
   }
 }

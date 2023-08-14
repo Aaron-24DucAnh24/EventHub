@@ -4,9 +4,9 @@ using TicketBooking.API.Models;
 
 namespace TicketBooking.API.DBContext
 {
-  public class DbContextSeeding
+  public static class DbContextSeeding
   {
-    public static void Run(ref ModelBuilder modelBuilder)
+    public static void AddDataSeeding(this ModelBuilder modelBuilder)
     {
       StreamReader categoryReader = new("./DBContext/SeedingData/Category.json");
       StreamReader eventReader = new("./DBContext/SeedingData/Event.json");

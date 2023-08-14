@@ -8,7 +8,7 @@ namespace TicketBooking.API.DBContext
   {
     ApplicationDbContext IDesignTimeDbContextFactory<ApplicationDbContext>.CreateDbContext(string[] args)
     {
-      var connectionString = ConfigurationString.Database;
+      var connectionString = ConfigurationHelper.Database;
 
       var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
       
