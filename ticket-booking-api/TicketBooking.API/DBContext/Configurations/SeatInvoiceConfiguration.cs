@@ -1,11 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using TicketBooking.API.Enum;
 using TicketBooking.API.Models;
 
 namespace TicketBooking.API.DBContext.Configuration
 {
-  public class SeatInvoiceConfiguration: IEntityTypeConfiguration<SeatInvoice>
+    public class SeatInvoiceConfiguration: IEntityTypeConfiguration<SeatInvoice>
   {
     public void Configure(EntityTypeBuilder<SeatInvoice> builder)
     {

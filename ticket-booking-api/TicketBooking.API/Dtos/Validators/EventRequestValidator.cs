@@ -8,9 +8,7 @@ namespace TicketBooking.API.Dtos.Validators
     {
       RuleFor(x => x.Image).NotNull()
         .WithMessage("Image is required")
-        .Must(i => i.ContentType != "image/jpeg"
-                  && i.ContentType != "image/png"
-                  && i.ContentType != "image/jpg")
+        .Must(i => i.ContentType.Contains("image"))
         .WithMessage("Unsupported image type");
 
       RuleFor(x => x.Title).NotEmpty()

@@ -17,10 +17,10 @@ namespace TicketBooking.API.Dtos.Validators
 
       RuleFor(x => x.EventId).NotEmpty().WithMessage("EventId is required");
 
-      RuleFor(x => x.seatIds).Must(s => s.Count > 0 && s.Count <= 3)
+      RuleFor(x => x.SeatIds).Must(s => s.Count > 0 && s.Count <= 3)
         .WithMessage("Valid number of seats is between 0 and 3");
 
-      RuleForEach(x => x.seatIds).NotEmpty()
+      RuleForEach(x => x.SeatIds).NotEmpty()
         .WithMessage("SeatId is required");
     }
   }

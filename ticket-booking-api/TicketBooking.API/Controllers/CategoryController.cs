@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using AutoMapper;
 using TicketBooking.API.Dtos;
 using TicketBooking.API.Services;
-using TicketBooking.API.Helper;
+using TicketBooking.API.Constants;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TicketBooking.API.Controller
 {
@@ -12,30 +12,27 @@ namespace TicketBooking.API.Controller
 	{
 		private readonly ICategoryService _categoryService;
 		private readonly ICacheService _cacheService;
-		private readonly IMapper _mapper;
 
 		public CategoryController(
 			ICategoryService categoryService,
-			ICacheService cacheService,
-			IMapper mapper)
+			ICacheService cacheService)
 		{
 			_categoryService = categoryService;
 			_cacheService = cacheService;
-			_mapper = mapper;
 		}
 
 		[HttpGet]
-		[ProducesResponseType(204, Type = typeof(IEnumerable<CategoryResponse>))]
+		[AllowAnonymous]
 		public ActionResult GetCategories()
 		{
-			var result = _cacheService.GetData<List<CategoryResponse>>(CacheKeys.Categories);
+			List<CategoryResponse>? result = _cacheService.GetData<List<CategoryResponse>>(CacheKeys.CATEGORIES);
 
-			if(result != null && result.Count > 0)
+			if (result != null && result.Count > 0)
 				return Ok(result);
 
-			result = _mapper.Map<List<CategoryResponse>>(_categoryService.GetCategories());
+			result = _categoryService.GetCategories();
 
-			_cacheService.SetData(CacheKeys.Categories, result, DateTimeOffset.Now.AddMinutes(2));
+			_cacheService.SetData(CacheKeys.CATEGORIES, result, DateTimeOffset.Now.AddMinutes(2));
 
 			return Ok(result);
 		}

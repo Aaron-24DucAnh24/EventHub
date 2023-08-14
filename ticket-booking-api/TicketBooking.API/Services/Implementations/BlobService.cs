@@ -8,13 +8,13 @@ namespace TicketBooking.API.Services
 	{
 		public BlobService() {}
 
-		public async Task<string> UpLoadImage(IFormFile file, string name)
+		public async Task<string> UpLoadImageAsync(IFormFile file, string name)
 		{
-			var connectionString = ConfigurationString.BlobStorage;
-			var blobServiceClient = new BlobServiceClient(connectionString);
-			var containerClient = blobServiceClient.GetBlobContainerClient("img");
-			var stream = file.OpenReadStream();
-			var blobClient = containerClient.GetBlobClient(name);
+			string? connectionString = ConfigurationHelper.BlobStorage;
+			BlobServiceClient blobServiceClient = new(connectionString);
+			BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("img");
+			Stream stream = file.OpenReadStream();
+			BlobClient blobClient = containerClient.GetBlobClient(name);
 
 			await blobClient.UploadAsync(
 				stream,
@@ -24,18 +24,18 @@ namespace TicketBooking.API.Services
 			return blobClient.Uri.ToString();
 		}
 
-		public async Task<bool> RemoveImage(string blogName)
+		public async Task<bool> RemoveImageAsync(string blogName)
 		{
-			var connectionString = ConfigurationString.BlobStorage;
-			var blobServiceClient = new BlobServiceClient(connectionString);
-			var containerClient = blobServiceClient.GetBlobContainerClient("img");
+			string? connectionString = ConfigurationHelper.BlobStorage;
+			BlobServiceClient blobServiceClient = new(connectionString);
+			BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("img");
 
 			try
 			{
 				await containerClient.DeleteBlobAsync(blogName);
 				return true;
 			}
-			catch (System.Exception)
+			catch (Exception)
 			{
 				return false;
 			}

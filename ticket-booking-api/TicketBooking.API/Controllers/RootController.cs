@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace TicketBooking.API.Controller
 {
   [ApiController]
+  [AllowAnonymous]
   [Route("/")]
   public class RootController : ControllerBase
   {

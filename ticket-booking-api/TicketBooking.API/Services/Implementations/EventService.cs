@@ -1,3 +1,4 @@
+using AutoMapper;
 using TicketBooking.API.Dtos;
 using TicketBooking.API.Models;
 using TicketBooking.API.Repository;
@@ -8,75 +9,55 @@ namespace TicketBooking.API.Services
 	{
 		private readonly IEventRepository _eventRepository;
 		private readonly IBlobService _blobService;
+		private readonly IMapper _mapper;
 
 		public EventService(
 			IEventRepository eventRepository,
-			IBlobService blobService)
+			IBlobService blobService,
+			IMapper mapper
+		)
 		{
 			_eventRepository = eventRepository;
 			_blobService = blobService;
+			_mapper = mapper;
 		}
 
-		public ICollection<Event> GetPublishedEvents()
+		public ICollection<EventResponse> GetPublishedEvents()
 		{
-			var result = _eventRepository.GetPublishedEvents();
+			ICollection<Event> events = _eventRepository.GetPublishedEvents();
+			ICollection<EventResponse> result = new List<EventResponse>();
 
-			foreach (var e in result)
+			foreach (var e in events)
 			{
-				foreach (var category in e.Categories)
-				{
-					category.Events = null;
-					category.UpdatedAt = null;
-					category.CreatedAt = null;
-					category.DeletedAt = null;
-				}
+				EventResponse eventResponse = _mapper.Map<EventResponse>(e);
+				result.Add(eventResponse);
 			}
 
 			return result;
 		}
 
-		public ICollection<Event> GetUnPublishedEvents()
+		public ICollection<EventResponse> GetUnPublishedEvents()
 		{
-			var result = _eventRepository.GetUnPublishedEvents();
+			ICollection<Event> events = _eventRepository.GetUnPublishedEvents();
+			ICollection<EventResponse> result = new List<EventResponse>();
 
-			foreach (var e in result)
+			foreach (var e in events)
 			{
-				foreach (var category in e.Categories)
-				{
-					category.Events = null;
-					category.UpdatedAt = null;
-					category.CreatedAt = null;
-					category.DeletedAt = null;
-				}
+				EventResponse eventResponse = _mapper.Map<EventResponse>(e);
+				result.Add(eventResponse);
 			}
 
 			return result;
 		}
 
-		public Event? GetEventDetail(string eventId)
+		public EventDetailResponse? GetEventDetail(string eventId)
 		{
-			var result = _eventRepository.GetEvent(eventId);
+			Event? e = _eventRepository.GetEvent(eventId);
 
-			if (result == null)
-				return result;
+			if (e == null)
+				return null;
 
-			foreach (var category in result.Categories)
-			{
-				category.Events = null;
-				category.UpdatedAt = null;
-				category.CreatedAt = null;
-				category.DeletedAt = null;
-			}
-
-			foreach (var e in result.SeatEvents)
-			{
-				e.Event = null;
-				e.Seat.SeatEvents = null;
-				e.Seat.CreatedAt = null;
-				e.Seat.UpdatedAt = null;
-				e.Seat.DeletedAt = null;
-				e.Seat.Invoices = null;
-			}
+			EventDetailResponse result = _mapper.Map<EventDetailResponse>(e);
 
 			result.SeatEvents = result.SeatEvents
 				.OrderBy(x => x.SeatId[0])
@@ -92,14 +73,14 @@ namespace TicketBooking.API.Services
 			return _eventRepository.GetEvent(eventId);
 		}
 
-		public async Task<bool> CreateEvent(EventRequest eventRequest)
+		public async Task<bool> CreateEventAsync(EventRequest eventRequest)
 		{
 			var newEventId = Guid.NewGuid().ToString();
 
-			string imgUrl = await _blobService.UpLoadImage(eventRequest.Image, newEventId);
+			string imgUrl = await _blobService.UpLoadImageAsync(eventRequest.Image, newEventId);
 
-			var newEvent = new Event
-			{
+			Event newEvent = new()
+      {
 				Id = newEventId,
 				Duration = eventRequest.Duration,
 				Title = eventRequest.Title,
@@ -124,15 +105,14 @@ namespace TicketBooking.API.Services
 			return true;
 		}
 
-		public async Task<bool> DeleteEvent(string eventId)
+		public async Task<bool> DeleteEventAsync(Event e)
 		{
-			await _blobService.RemoveImage(eventId);
-			return _eventRepository.DeleteEvent(eventId);
+			await _blobService.RemoveImageAsync(e.Id);
+			return _eventRepository.DeleteEvent(e.Id);
 		}
 
-		public bool SetPublished(string evenId)
+		public bool SetPublished(Event e)
 		{
-			var e = GetEvent(evenId);
 			e.IsPublished = true;
 			e.UpdatedAt = DateTime.Now;
 			return _eventRepository.UpdateEvent(e);

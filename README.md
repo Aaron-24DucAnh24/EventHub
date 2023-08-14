@@ -16,8 +16,6 @@ Netpower internship project
 | - - - ticket-booking-api/
 			|
 			| - - - TicketBooking.API/
-			|
-			| - - - TicketBooking.API.sln
 ```
 
 ## Installation and Run

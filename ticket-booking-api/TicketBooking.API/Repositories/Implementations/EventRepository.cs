@@ -30,7 +30,7 @@ namespace TicketBooking.API.Repository
 
     public bool DeleteEvent(string id)
     {
-      var e = GetEvent(id);
+      Event? e = GetEvent(id);
 
       if (e == null)
         return false;
@@ -41,7 +41,7 @@ namespace TicketBooking.API.Repository
 
     public Event? GetEvent(string id)
     {
-      var result = _dbContext.Events
+      Event? result = _dbContext.Events
         .Where(x => (x.Id == id) && (!x.IsDeleted))
         .Include(x => x.SeatEvents)
         .ThenInclude(x => x.Seat)
@@ -53,7 +53,7 @@ namespace TicketBooking.API.Repository
 
     public ICollection<Event> GetPublishedEvents()
     {
-      var result = _dbContext.Events
+      ICollection<Event> result = _dbContext.Events
         .Where(x => !x.IsDeleted && x.IsPublished)
         .Include(x => x.Categories)
         .OrderBy(x => x.Date)
@@ -64,7 +64,7 @@ namespace TicketBooking.API.Repository
 
     public ICollection<Event> GetUnPublishedEvents()
     {
-      var result = _dbContext.Events
+      ICollection<Event> result = _dbContext.Events
         .Where(x => !x.IsDeleted && !x.IsPublished)
         .Include(x => x.Categories)
         .ToList();
@@ -82,8 +82,12 @@ namespace TicketBooking.API.Repository
     {
       foreach (var categoryName in categoryNames)
       {
-        var category = _categoryRepository.GetCategory(categoryName);
-        var eventCategory = new EventCategory()
+        Category? category = _categoryRepository.GetCategory(categoryName);
+
+        if(category == null)
+          return false;
+
+        EventCategory eventCategory = new()
         {
           CategoryId = category.Id,
           EventId = eventId,
@@ -100,11 +104,11 @@ namespace TicketBooking.API.Repository
 
     bool IEventRepository.AddSeatEvent(EventRequest eventRequest, string eventId)
     {
-      var seats = _seatRepository.GetSeats();
+      List<Seat> seats = _seatRepository.GetSeats();
 
       foreach (var seat in seats)
       {
-        var seatEvent = new SeatEvent()
+        SeatEvent seatEvent = new()
         {
           SeatId = seat.Id,
           EventId = eventId,
