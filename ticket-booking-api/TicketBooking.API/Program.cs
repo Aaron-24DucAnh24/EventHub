@@ -16,9 +16,7 @@ builder.Services.AddBusinessServices();
 
 builder.Services.AddRepositoryServices();
 
-builder.Services.AddCoreService();
-
-builder.Services.AddHttpContextAccessor();
+builder.Services.AddCoreServices();
 
 builder.Services.AddDbContext<ApplicationDbContext>(option =>
 {

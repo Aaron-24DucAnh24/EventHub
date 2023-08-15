@@ -6,6 +6,7 @@ namespace TicketBooking.API.Services
   { 
     public Task<AuthenticationResponse?> RegisterAsync(RegisterRequest request);
     public Task<AuthenticationResponse?> LoginAsync(LoginRequest request);
+    public bool ValidateAccessToken(string token);
     public Task<string?> RefreshTokenAsync(string token);
   }
 }

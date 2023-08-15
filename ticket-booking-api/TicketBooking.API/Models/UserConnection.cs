@@ -7,5 +7,6 @@ namespace TicketBooking.API.Models
     public string Email { get; set; } = null!;
     public string Password { get; set; } = null!;
     public DateTime RefreshTokenExpiredDate { get; set; }
+    public DateTime AccessTokenExpiredDate { get; set; }
   }
 }

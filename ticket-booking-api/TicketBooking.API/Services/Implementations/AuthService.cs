@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using TicketBooking.API.Dtos;
 using TicketBooking.API.Helper;
 using TicketBooking.API.Models;
@@ -6,25 +5,22 @@ using TicketBooking.API.Repository;
 
 namespace TicketBooking.API.Services
 {
-  public class AuthService : IAuthService
+    public class AuthService : IAuthService
   {
     private readonly IUserRepository _userRepository;
-    private readonly IUserConnectionRepository _userConnectionRepository; 
-    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IUserConnectionRepository _userConnectionRepository;
 
     public AuthService(
       IUserRepository userRepository,
-      IUserConnectionRepository userConnectionRepository,
-      IHttpContextAccessor httpContextAccessor)
+      IUserConnectionRepository userConnectionRepository)
     {
       _userRepository = userRepository;
       _userConnectionRepository = userConnectionRepository;
-      _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<AuthenticationResponse?> RegisterAsync(RegisterRequest request)
     {
-      if(_userRepository.FindUser(request.Email) != null)
+      if (_userRepository.FindUser(request.Email) != null)
         return null;
 
       User user = new()
@@ -35,7 +31,7 @@ namespace TicketBooking.API.Services
         Id = Guid.NewGuid().ToString()
       };
 
-      if(!await _userRepository.CreateUserAsync(user))
+      if (!await _userRepository.CreateUserAsync(user))
         return null;
 
       return await LoginAsync(new LoginRequest()
@@ -45,14 +41,14 @@ namespace TicketBooking.API.Services
       });
     }
 
-		public async Task<AuthenticationResponse?> LoginAsync(LoginRequest request)
-		{
-      User? user = _userRepository.FindUser(request.Email);      
-	    if (user == null || !HashHelper.CompareHash(request.Password, user.Password))
-			 return null;
+    public async Task<AuthenticationResponse?> LoginAsync(LoginRequest request)
+    {
+      User? user = _userRepository.FindUser(request.Email);
+      if (user == null || !HashHelper.CompareHash(request.Password, user.Password))
+        return null;
 
       string? accessToken = TokenHelper.GenerateAccessToken(user);
-      if(accessToken == null)
+      if (accessToken == null)
         return null;
 
       string refreshToken = TokenHelper.GenerateRefreshToken(user);
@@ -67,35 +63,41 @@ namespace TicketBooking.API.Services
       {
         AccessToken = accessToken,
         RefreshToken = refreshToken,
-        Email =request.Email,
+        Email = request.Email,
         Password = HashHelper.GetHash(request.Password)
       };
 
-      if(await _userConnectionRepository.CreateUserConnection(userConnection))
+      if (await _userConnectionRepository.CreateUserConnection(userConnection))
         return response;
 
       return null;
     }
 
-		public async Task<string?> RefreshTokenAsync(string token)
+    public async Task<string?> RefreshTokenAsync(string token)
     {
       UserConnection? userConnection = _userConnectionRepository.FindUserConnection(token);
-      if(userConnection == null) 
+      if (userConnection == null)
         return null;
 
       User? user = _userRepository.FindUser(userConnection.Email);
-      if(user == null)
+      if (user == null)
         return null;
 
       string? accessToken = TokenHelper.GenerateAccessToken(user);
-      if(accessToken == null)
+      if (accessToken == null)
         return null;
 
       userConnection.AccessToken = accessToken;
-      if(await _userConnectionRepository.UpdateUserConnection(userConnection))
+      userConnection.AccessTokenExpiredDate = DateTime.Now.AddMinutes(15);
+      if (await _userConnectionRepository.UpdateUserConnection(userConnection))
         return accessToken;
 
       return null;
     }
-	}
+
+    public bool ValidateAccessToken(string token)
+    {
+      return true;
+    }
+  }
 }

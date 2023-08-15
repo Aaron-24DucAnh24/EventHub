@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using TicketBooking.API.Models;
 
@@ -28,11 +29,11 @@ namespace TicketBooking.API.Helper
         issuerConfig,
         issuerConfig,
         claims,
-        expires: DateTime.Now.AddHours(3),
         signingCredentials: creds
       );
 
-      return new JwtSecurityTokenHandler().WriteToken(token);
+      JwtSecurityTokenHandler tokenHandler= new();
+      return tokenHandler.WriteToken(token);
     }
 
     public static string GenerateRefreshToken(User user)
@@ -46,6 +47,43 @@ namespace TicketBooking.API.Helper
       }
 
       return token;
+    }
+
+    public static TokenValidationParameters CreateTokenValidationParameters()
+    {
+      string? issuer = ConfigurationHelper.configuration.GetValue<string>("Token:Issuer");
+      string? signingKey = ConfigurationHelper.configuration.GetValue<string>("Token:Key");
+
+      if (signingKey == null || issuer == null)
+      {
+        throw new ArgumentNullException("CreateTokenValidation arguments cannot be null");
+      }
+
+      byte[] signingKeyBytes = Encoding.UTF8.GetBytes(signingKey);
+
+      return new TokenValidationParameters()
+      {
+        ValidateIssuer = true,
+        ValidIssuer = issuer,
+        ValidateAudience = true,
+        ValidAudience = issuer,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ClockSkew = TimeSpan.Zero,
+        IssuerSigningKey = new SymmetricSecurityKey(signingKeyBytes)
+      };
+    }
+
+    public static string? GetAccessTokenFromRequest(HttpRequest request)
+    {
+      string? bearerToken = request.Headers["Authorization"].FirstOrDefault();
+      if(bearerToken == null)
+      {
+        return null;
+      }
+
+      string jwtToken = bearerToken.Substring($"{JwtBearerDefaults.AuthenticationScheme} ".Length).Trim();
+      return jwtToken;
     }
   }
 }

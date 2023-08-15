@@ -23,12 +23,10 @@ namespace TicketBooking.API.Extensions
       services.AddSingleton<ICacheService, CacheService>();
       services.AddScoped<IBlobService, BlobService>();
       services.AddScoped<IAuthService, AuthService>();
-
       services.AddScoped<IValidator<EventRequest>, EventRequestValidator>();
       services.AddScoped<IValidator<InvoiceRequest>, InvoiceRequestValidator>();
       services.AddScoped<IValidator<RegisterRequest>, RegisterRequestValidator>();
       services.AddScoped<IValidator<LoginRequest>, LoginRequestValidator>();
-
       services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
     }
 
@@ -42,7 +40,15 @@ namespace TicketBooking.API.Extensions
       services.AddScoped<IUserConnectionRepository, UserConnectionRepository>();
     }
 
-    public static void AddCoreService(this IServiceCollection services)
+    public static void AddCoreServices(this IServiceCollection services)
+    {
+      services.AddSwaggerService();
+      services.AddCorsPolicies();
+      services.AddJwtAuthentication();
+      services.AddHttpContextAccessor();
+    }
+
+    public static void AddSwaggerService(this IServiceCollection services)
     {
       services.AddSwaggerGen(options =>
       {
@@ -57,37 +63,10 @@ namespace TicketBooking.API.Extensions
 
         options.OperationFilter<SecureEndpointAuthRequirementFilter>();
       });
+    }
 
-      string? issuer = ConfigurationHelper.configuration.GetValue<string>("Token:Issuer");
-      string? signingKey = ConfigurationHelper.configuration.GetValue<string>("Token:Key");
-      if (signingKey == null)
-      {
-        throw new ArgumentException("No key configuration found");
-      }
-      byte[] signingKeyBytes = System.Text.Encoding.UTF8.GetBytes(signingKey);
-
-      services.AddAuthentication(opt =>
-      {
-        opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-      })
-      .AddJwtBearer(options =>
-      {
-        options.RequireHttpsMetadata = false;
-        options.SaveToken = true;
-        options.TokenValidationParameters = new TokenValidationParameters()
-        {
-          ValidateIssuer = true,
-          ValidIssuer = issuer,
-          ValidateAudience = true,
-          ValidAudience = issuer,
-          ValidateLifetime = true,
-          ValidateIssuerSigningKey = true,
-          ClockSkew = TimeSpan.Zero,
-          IssuerSigningKey = new SymmetricSecurityKey(signingKeyBytes)
-        };
-      });
-
+    public static void AddCorsPolicies(this IServiceCollection services)
+    {
       services.AddCors(options =>
       {
         options.AddPolicy("public", policy =>
@@ -95,6 +74,47 @@ namespace TicketBooking.API.Extensions
           policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
         });
       });
+    }
+
+    public static void AddJwtAuthentication(this IServiceCollection services)
+    {
+      services
+        .AddAuthentication(opt =>
+        {
+          opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+          opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+          options.SaveToken = true;
+          options.TokenValidationParameters = TokenHelper.CreateTokenValidationParameters();
+          options.Events = new JwtBearerEvents()
+          {
+            OnMessageReceived = context =>
+            {
+              Endpoint? endpoint = context.HttpContext.GetEndpoint();
+              bool authorized = endpoint?.Metadata?.GetMetadata<IAllowAnonymous>() == null;
+
+              if (authorized)
+              {
+                string? accessToken = TokenHelper.GetAccessTokenFromRequest(context.Request) ?? throw new SecurityTokenValidationException();
+                IAuthService authService = context.HttpContext.RequestServices.GetRequiredService<IAuthService>();
+                bool isValid = authService.ValidateAccessToken(accessToken);
+
+                if (isValid)
+                {
+                  context.Token = accessToken;
+                }
+                else
+                {
+                  throw new SecurityTokenValidationException();
+                }
+              }
+
+              return Task.CompletedTask;
+            }
+          };
+        });
     }
   }
 
