@@ -7,7 +7,7 @@ using TicketBooking.API.Models;
 
 namespace TicketBooking.API.Helper
 {
-  public class TokenHelper
+  public static class TokenHelper
   {
     public static string? GenerateAccessToken(User user)
     {
@@ -29,10 +29,12 @@ namespace TicketBooking.API.Helper
         issuerConfig,
         issuerConfig,
         claims,
-        signingCredentials: creds
+        signingCredentials: creds,
+        expires: DateTime.Now.AddMinutes(15),
+        notBefore: DateTime.Now
       );
 
-      JwtSecurityTokenHandler tokenHandler= new();
+      JwtSecurityTokenHandler tokenHandler = new();
       return tokenHandler.WriteToken(token);
     }
 
@@ -77,13 +79,26 @@ namespace TicketBooking.API.Helper
     public static string? GetAccessTokenFromRequest(HttpRequest request)
     {
       string? bearerToken = request.Headers["Authorization"].FirstOrDefault();
-      if(bearerToken == null)
+      if (bearerToken == null)
       {
         return null;
       }
 
-      string jwtToken = bearerToken.Substring($"{JwtBearerDefaults.AuthenticationScheme} ".Length).Trim();
+      string jwtToken = bearerToken[(JwtBearerDefaults.AuthenticationScheme.Length + 1)..].Trim();
       return jwtToken;
+    }
+
+    public static string? GetEmail(this JwtSecurityToken token)
+    {
+      IEnumerable<Claim> claims = token.Claims;
+      Claim? emailClaim = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
+
+      if(emailClaim == null)
+      {
+        return null;
+      }    
+
+      return emailClaim.Value;
     }
   }
 }

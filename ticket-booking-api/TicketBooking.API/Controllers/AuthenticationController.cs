@@ -80,11 +80,18 @@ namespace TicketBooking.API.Controller
       return Ok(await _authService.RefreshTokenAsync(refreshToken));
     }
 
+    [HttpGet("logout")]
+    [Authorize]
+    public async Task<ActionResult<string>> LogoutAsync()
+    {
+      return Ok(ResponseStatus.SUCCESS);
+    }
+
     [HttpGet("test-authentication")]
     [Authorize]
     public ActionResult<string> TestAuthentication()
     {
-      return Ok("Success");
+      return Ok(ResponseStatus.SUCCESS);
     }
   }
 }
