@@ -24,13 +24,18 @@ namespace TicketBooking.API.Middlewares
 
         switch (exception)
         {
+          case SecurityTokenExpiredException _:
+            message = "Access Token expired";
+            statusCode = 401;
+            break;
+
           case SecurityTokenValidationException _:
-            message = "Unauthorized or access token expired";
+            message = "Unauthorized or Invalid Access Token";
             statusCode = 401;
             break;
 
           default:
-            message = "Some unknown errors occurred";
+            message = exception.Message;
             statusCode = 500;
             break;
         }

@@ -59,14 +59,14 @@ namespace TicketBooking.API.Controller
 
 			if (code == "")
 			{
-				return Problem(ResponseStatus.SERVICE_ERROR);
+				return Problem(ResponseMessage.SERVICE_ERROR);
 			}
 
 			string invoiceId = _invoicesService.AddInvoice(invoiceRequest, code);
 
 			if (invoiceId == "")
 			{
-				ModelState.AddModelError("", ResponseStatus.ADD_ERROR);
+				ModelState.AddModelError("", ResponseMessage.ADD_ERROR);
 				return BadRequest(ModelState);
 			}
 
@@ -81,14 +81,14 @@ namespace TicketBooking.API.Controller
 		{
 			if (string.IsNullOrEmpty(invoiceId) || string.IsNullOrEmpty(code))
 			{
-				ModelState.AddModelError("", ResponseStatus.INVALID_REQUEST_PARAMETER);
+				ModelState.AddModelError("", ResponseMessage.INVALID_REQUEST_PARAMETER);
 				return BadRequest();
 			}
 
 			bool result = _invoicesService.ValidateInvoice(invoiceId, code);
 
 			if (!result)
-				return Problem(ResponseStatus.UPDATE_ERROR);
+				return Problem(ResponseMessage.UPDATE_ERROR);
 
 			return Ok(result.ToString());
 		}

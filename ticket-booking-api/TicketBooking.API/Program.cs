@@ -19,6 +19,8 @@ builder.Services.AddRepositoryServices();
 
 builder.Services.AddCoreServices();
 
+builder.Services.AddBusinessContexts();
+
 builder.Services.AddDbContext<ApplicationDbContext>(option =>
 {
 	option.UseSqlServer(builder.Configuration.GetConnectionString("TicketBookingDatabase"));

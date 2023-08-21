@@ -1,6 +1,6 @@
 using TicketBooking.API.Dtos;
 using TicketBooking.API.Models;
-using TicketBooking.API.Enum;
+using TicketBooking.API.Enums;
 using TicketBooking.API.Repository;
 
 namespace TicketBooking.API.Services

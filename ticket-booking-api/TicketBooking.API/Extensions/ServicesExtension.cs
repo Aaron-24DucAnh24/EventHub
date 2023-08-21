@@ -1,11 +1,14 @@
+using System.Security.Claims;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using TicketBooking.API.Contexts;
 using TicketBooking.API.Dtos;
 using TicketBooking.API.Dtos.Validators;
+using TicketBooking.API.Enums;
 using TicketBooking.API.Helper;
 using TicketBooking.API.Repository;
 using TicketBooking.API.Services;
@@ -23,6 +26,7 @@ namespace TicketBooking.API.Extensions
       services.AddSingleton<ICacheService, CacheService>();
       services.AddScoped<IBlobService, BlobService>();
       services.AddScoped<IAuthService, AuthService>();
+      services.AddScoped<ICookieService, CookieService>();
       services.AddScoped<IValidator<EventRequest>, EventRequestValidator>();
       services.AddScoped<IValidator<InvoiceRequest>, InvoiceRequestValidator>();
       services.AddScoped<IValidator<RegisterRequest>, RegisterRequestValidator>();
@@ -46,6 +50,11 @@ namespace TicketBooking.API.Extensions
       services.AddCorsPolicies();
       services.AddJwtAuthentication();
       services.AddHttpContextAccessor();
+    }
+
+    public static void AddBusinessContexts(this IServiceCollection services)
+    {
+      services.AddScoped<IUserContext, UserContext>();
     }
 
     public static void AddSwaggerService(this IServiceCollection services)
@@ -110,6 +119,19 @@ namespace TicketBooking.API.Extensions
                   throw new SecurityTokenValidationException();
                 }
               }
+
+              return Task.CompletedTask;
+            },
+
+            OnTokenValidated = context =>
+            {
+              ClaimsPrincipal? claimsPrincipal = context.Principal ?? throw new SecurityTokenValidationException();
+              UserContextInfo userContextInfo = TokenHelper.GetEmail(claimsPrincipal) ?? throw new SecurityTokenValidationException();
+              
+              IUserContext userContext = context.HttpContext.RequestServices.GetRequiredService<IUserContext>();
+              userContext.Email = userContextInfo.Email; 
+              userContext.Name = userContextInfo.Name;
+              userContext.UserRole = userContextInfo.Role;
 
               return Task.CompletedTask;
             }

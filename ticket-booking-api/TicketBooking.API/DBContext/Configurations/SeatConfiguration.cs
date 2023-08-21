@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using TicketBooking.API.Enum;
+using TicketBooking.API.Enums;
 using TicketBooking.API.Models;
 
 namespace TicketBooking.API.DBContext.Configuration

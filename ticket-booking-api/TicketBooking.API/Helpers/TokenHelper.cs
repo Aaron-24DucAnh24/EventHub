@@ -3,6 +3,9 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using TicketBooking.API.Constants;
+using TicketBooking.API.Dtos;
+using TicketBooking.API.Enums;
 using TicketBooking.API.Models;
 
 namespace TicketBooking.API.Helper
@@ -30,7 +33,7 @@ namespace TicketBooking.API.Helper
         issuerConfig,
         claims,
         signingCredentials: creds,
-        expires: DateTime.Now.AddMinutes(15),
+        expires: DateTime.Now.AddMinutes(TokenSettings.ACCESS_TOKEN_EXPIRATION_MINUTES),
         notBefore: DateTime.Now
       );
 
@@ -58,7 +61,7 @@ namespace TicketBooking.API.Helper
 
       if (signingKey == null || issuer == null)
       {
-        throw new ArgumentNullException("CreateTokenValidation arguments cannot be null");
+        throw new Exception("CreateTokenValidation arguments cannot be null");
       }
 
       byte[] signingKeyBytes = Encoding.UTF8.GetBytes(signingKey);
@@ -88,7 +91,7 @@ namespace TicketBooking.API.Helper
       return jwtToken;
     }
 
-    public static string? GetEmail(this JwtSecurityToken token)
+    public static string? GetEmail(JwtSecurityToken token)
     {
       IEnumerable<Claim> claims = token.Claims;
       Claim? emailClaim = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
@@ -99,6 +102,26 @@ namespace TicketBooking.API.Helper
       }    
 
       return emailClaim.Value;
+    }
+
+    public static UserContextInfo? GetEmail(ClaimsPrincipal claimsPrincipal)
+    {
+      IEnumerable<Claim> claims = claimsPrincipal.Claims;
+      Claim? emailClaim = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
+      Claim? nameClaim = claims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
+      Claim? roleClaim = claims.FirstOrDefault(c => c.Type == ClaimTypes.Role);
+
+      if(emailClaim == null || nameClaim == null || roleClaim == null)
+      {
+        return null;
+      }    
+
+      return new UserContextInfo()
+      {
+        Name = nameClaim.Value,
+        Email = emailClaim.Value,
+        Role = (UserRole) Enum.Parse(typeof(UserRole), roleClaim.Value)
+      };
     }
   }
 }

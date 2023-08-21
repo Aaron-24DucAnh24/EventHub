@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
+using TicketBooking.API.Contexts;
 using TicketBooking.API.Dtos;
 using TicketBooking.API.Helper;
 using TicketBooking.API.Models;
@@ -11,13 +12,16 @@ namespace TicketBooking.API.Services
   {
     private readonly IUserRepository _userRepository;
     private readonly IUserConnectionRepository _userConnectionRepository;
+    private readonly IUserContext _userContext;
 
     public AuthService(
       IUserRepository userRepository,
-      IUserConnectionRepository userConnectionRepository)
+      IUserConnectionRepository userConnectionRepository,
+      IUserContext userContext)
     {
       _userRepository = userRepository;
       _userConnectionRepository = userConnectionRepository;
+      _userContext = userContext;
     }
 
     public async Task<AuthenticationResponse?> RegisterAsync(RegisterRequest request)
@@ -33,7 +37,7 @@ namespace TicketBooking.API.Services
         Id = Guid.NewGuid().ToString()
       };
 
-      if(!await _userRepository.CreateUserAsync(user))
+      if (!await _userRepository.CreateUserAsync(user))
         return null;
 
       UserConnection userConnection = new()
@@ -42,9 +46,9 @@ namespace TicketBooking.API.Services
         Password = HashHelper.GetHash(request.Password)
       };
 
-      if(!await _userConnectionRepository.CreateUserConnectionAsync(userConnection))
+      if (!await _userConnectionRepository.CreateUserConnectionAsync(userConnection))
         return null;
-         
+
       return await LoginAsync(new LoginRequest()
       {
         Email = request.Email,
@@ -65,13 +69,14 @@ namespace TicketBooking.API.Services
       string refreshToken = TokenHelper.GenerateRefreshToken(user);
 
       UserConnection? userConnection = _userConnectionRepository.FindUserConnectionByEmail(request.Email);
-      if(userConnection == null)
+      if (userConnection == null)
         return null;
 
       userConnection.AccessToken = accessToken;
       userConnection.RefreshToken = refreshToken;
       userConnection.RefreshTokenExpiredDate = DateTimeOffset.Now.AddDays(7);
       userConnection.AccessTokenExpiredDate = DateTimeOffset.Now.AddMinutes(15);
+      userConnection.IsDeleted = false;
 
       AuthenticationResponse response = new()
       {
@@ -107,41 +112,56 @@ namespace TicketBooking.API.Services
       return null;
     }
 
+    public async Task<bool> LogoutAsync()
+    {
+      string email = _userContext.Email;
+
+      UserConnection? userConnection = _userConnectionRepository.FindUserConnectionByEmail(email);
+      if (userConnection == null)
+        return false;
+
+      userConnection.IsDeleted = true;
+      if (!await _userConnectionRepository.UpdateUserConnectionAsync(userConnection))
+        return false;
+
+      return true;
+    }
+
     public bool ValidateAccessToken(string token)
     {
-      SecurityToken? securityToken = null;
       JwtSecurityTokenHandler tokenHandler = new();
 
+      SecurityToken? securityToken;
       try
       {
         tokenHandler.ValidateToken(token, TokenHelper.CreateTokenValidationParameters(), out securityToken);
       }
       catch (Exception)
       {
-        throw new SecurityTokenExpiredException(); 
+        throw new SecurityTokenExpiredException();
       }
 
-      if(securityToken == null)
+      if (securityToken == null)
       {
         return false;
       }
 
-      JwtSecurityToken validatedToken = (JwtSecurityToken) securityToken;
-      string? email =  validatedToken.GetEmail();
+      JwtSecurityToken validatedToken = (JwtSecurityToken)securityToken;
+      string? email = TokenHelper.GetEmail(validatedToken);
 
-      if(email == null)
+      if (email == null)
       {
         return false;
-      } 
+      }
 
       UserConnection? userConnection = _userConnectionRepository.FindUserConnectionByEmail(email);
 
-      if(userConnection == null)
+      if (userConnection == null)
       {
         return false;
       }
 
-      if(userConnection.AccessTokenExpiredDate < DateTimeOffset.Now)
+      if (userConnection.AccessTokenExpiredDate < DateTimeOffset.Now || userConnection.IsDeleted)
       {
         return false;
       }
