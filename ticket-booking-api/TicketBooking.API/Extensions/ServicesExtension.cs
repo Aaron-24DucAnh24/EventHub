@@ -8,14 +8,13 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using TicketBooking.API.Contexts;
 using TicketBooking.API.Dtos;
 using TicketBooking.API.Dtos.Validators;
-using TicketBooking.API.Enums;
 using TicketBooking.API.Helper;
 using TicketBooking.API.Repository;
 using TicketBooking.API.Services;
 
 namespace TicketBooking.API.Extensions
 {
-  public static class ServicesExtension
+    public static class ServicesExtension
   {
     public static void AddBusinessServices(this IServiceCollection services)
     {

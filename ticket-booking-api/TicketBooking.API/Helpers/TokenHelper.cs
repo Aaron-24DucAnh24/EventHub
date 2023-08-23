@@ -86,7 +86,6 @@ namespace TicketBooking.API.Helper
       {
         return null;
       }
-
       string jwtToken = bearerToken[(JwtBearerDefaults.AuthenticationScheme.Length + 1)..].Trim();
       return jwtToken;
     }

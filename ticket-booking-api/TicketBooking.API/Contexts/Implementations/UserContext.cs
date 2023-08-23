@@ -12,4 +12,4 @@ namespace TicketBooking.API.Contexts
     public string Email { get { return _email; } set { _email = value; } }
     public UserRole UserRole { get { return _role; } set { _role = value; } }
   }
-}
+} 

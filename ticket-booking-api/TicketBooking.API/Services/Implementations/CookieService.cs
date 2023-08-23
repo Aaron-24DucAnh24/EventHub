@@ -1,4 +1,3 @@
-using System.Net;
 using TicketBooking.API.Constants;
 
 namespace TicketBooking.API.Services
