@@ -10,7 +10,6 @@ namespace TicketBooking.API.Services
 
 		public EmailValidationService()
 		{
-
 			_smtpClient = new SmtpClient(ConfigurationHelper.SmtpClient, 587)
 			{
 				EnableSsl = true,

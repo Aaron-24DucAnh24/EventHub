@@ -16,15 +16,18 @@ namespace TicketBooking.API.Controller
     private readonly IAuthService _authService;
     private readonly IValidator<LoginRequest> _loginRequestValidator;
     private readonly IValidator<RegisterRequest> _registerRequestValidator;
+    private readonly ICookieService _cookieService;
 
     public AuthenticationController(
       IAuthService authService,
       IValidator<LoginRequest> loginRequestValidator,
-      IValidator<RegisterRequest> registerRequestValidator)
+      IValidator<RegisterRequest> registerRequestValidator,
+      ICookieService cookieService)
     {
       _authService = authService;
       _loginRequestValidator = loginRequestValidator;
       _registerRequestValidator = registerRequestValidator;
+      _cookieService = cookieService;
     }
 
     [HttpPost("register")]
@@ -43,7 +46,7 @@ namespace TicketBooking.API.Controller
 
       if(result == null)
       {
-        ModelState.AddModelError("", ResponseStatus.AUTHENTICATION_DUPLICATE);
+        ModelState.AddModelError("", ResponseMessage.AUTHENTICATION_DUPLICATE);
         return BadRequest(ModelState);
       }
 
@@ -66,9 +69,12 @@ namespace TicketBooking.API.Controller
 
       if(result == null)
       {
-        ModelState.AddModelError("", ResponseStatus.AUTHENTICATION_INCORRECT);
+        ModelState.AddModelError("", ResponseMessage.AUTHENTICATION_INCORRECT);
         return BadRequest(ModelState);
       }
+
+      _cookieService.SetAccessToken(result.AccessToken);
+      _cookieService.SetRefreshToken (result.RefreshToken);
 
       return Ok(result);
     }
@@ -77,14 +83,28 @@ namespace TicketBooking.API.Controller
     [AllowAnonymous]
     public async Task<ActionResult<string>> RefreshTokenAsync([FromBody] string refreshToken)
     {
-      return Ok(await _authService.RefreshTokenAsync(refreshToken));
+      string? accessToken = await _authService.RefreshTokenAsync(refreshToken);
+      if(accessToken != null)
+        _cookieService.SetAccessToken(accessToken);
+
+      return Ok(accessToken);
+    }
+
+    [HttpGet("logout")]
+    [Authorize]
+    public async Task<ActionResult<string>> LogoutAsync()
+    {
+      await _authService.LogoutAsync();
+      _cookieService.ClearAccessToken();
+      _cookieService.ClearRefreshToken();
+      return Ok(ResponseMessage.SUCCESS);
     }
 
     [HttpGet("test-authentication")]
     [Authorize]
     public ActionResult<string> TestAuthentication()
     {
-      return Ok("Success");
+      return Ok(ResponseMessage.SUCCESS);
     }
   }
 }

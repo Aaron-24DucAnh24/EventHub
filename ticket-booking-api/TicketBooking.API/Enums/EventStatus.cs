@@ -1,4 +1,4 @@
-namespace TicketBooking.API.Enum
+namespace TicketBooking.API.Enums
 {
   public enum EventStatus
   {

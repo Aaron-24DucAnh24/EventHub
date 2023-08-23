@@ -4,9 +4,10 @@ namespace TicketBooking.API.Repository
 {
   public interface IUserConnectionRepository
   {
-    public Task<bool> CreateUserConnection(UserConnection userConnection);
-    public Task<bool> DeleteUserConnection(UserConnection userConnection);
-    public UserConnection? FindUserConnection(string refreshToken);
-    public Task<bool> UpdateUserConnection(UserConnection userConnection);
+    public Task<bool> CreateUserConnectionAsync(UserConnection userConnection);
+    public Task<bool> DeleteUserConnectionAsync(UserConnection userConnection);
+    public UserConnection? FindUserConnectionByRefreshToken(string refreshToken);
+    public UserConnection? FindUserConnectionByEmail(string email);
+    public Task<bool> UpdateUserConnectionAsync(UserConnection userConnection);
   }
 }
