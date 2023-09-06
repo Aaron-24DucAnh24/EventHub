@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TicketBooking.API.Extensions;
 using TicketBooking.API.DBContext;
+using TicketBooking.API.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,9 +17,9 @@ builder.Services.AddBusinessServices();
 
 builder.Services.AddRepositoryServices();
 
-builder.Services.AddCoreService();
+builder.Services.AddCoreServices();
 
-builder.Services.AddHttpContextAccessor();
+builder.Services.AddBusinessContexts();
 
 builder.Services.AddDbContext<ApplicationDbContext>(option =>
 {
@@ -32,6 +33,8 @@ if (app.Environment.IsDevelopment())
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 app.UseHttpsRedirection();
 

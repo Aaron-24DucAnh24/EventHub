@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TicketBooking.API.DBContext;
 using TicketBooking.API.Dtos;
-using TicketBooking.API.Enum;
+using TicketBooking.API.Enums;
 using TicketBooking.API.Models;
 
 namespace TicketBooking.API.Repository

@@ -73,13 +73,13 @@ namespace TicketBooking.API.Controller
 
 			if (!await _eventService.DeleteEventAsync(e))
 			{
-				return Problem(ResponseStatus.DELETE_ERROR);
+				return Problem(ResponseMessage.DELETE_ERROR);
 			}
 
 			_cacheService.RemoveData(CacheKeys.PUBLISHED_EVENTS);
 			_cacheService.RemoveData(CacheKeys.UNPUBLISHED_EVENTS);
 
-			return Ok(ResponseStatus.SUCCESS);
+			return Ok(ResponseMessage.SUCCESS);
 		}
 
 		[HttpPut("{eventId}")]
@@ -95,12 +95,12 @@ namespace TicketBooking.API.Controller
 
 			if (!_eventService.SetPublished(e))
 			{
-				return Problem(ResponseStatus.UPDATE_ERROR);
+				return Problem(ResponseMessage.UPDATE_ERROR);
 			}
 
 			_cacheService.RemoveData(CacheKeys.PUBLISHED_EVENTS);
 
-			return Ok(ResponseStatus.SUCCESS);
+			return Ok(ResponseMessage.SUCCESS);
 		}
 
 		[HttpPost]
@@ -119,13 +119,13 @@ namespace TicketBooking.API.Controller
 
 			if (!result)
 			{
-				ModelState.AddModelError("", ResponseStatus.ADD_ERROR);
+				ModelState.AddModelError("", ResponseMessage.ADD_ERROR);
 				return BadRequest(ModelState);
 			}
 
 			_cacheService.RemoveData(CacheKeys.UNPUBLISHED_EVENTS);
 
-			return Ok(ResponseStatus.SUCCESS);
+			return Ok(ResponseMessage.SUCCESS);
 		}
 	}
 }
