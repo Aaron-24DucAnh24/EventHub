@@ -1,13 +1,6 @@
 # Ticket Booking
 Netpower internship project
 
-## Branch structure
-```
-| - - - master (deployed, cannot be installed and run locally)
-|
-| - - - submission (is for installed and run locally)
-```
-
 ## Repository structure
 ```
 | - - - ticket-booking-webapp/
@@ -19,7 +12,6 @@ Netpower internship project
 ```
 
 ## Installation and Run
-> 🔥🔥🔥 Make sure you are in branch "submission"
 ### Setup local database instruction
 1. Install Docker on Linux or WSL
 2. Make sure you stop your local SQL Server database service
@@ -51,7 +43,7 @@ npm i
 npm start
 ```
 
-> Now webapp is running at <<<http://localhost:3000>>> on your local machine.
+> Now webapp is running at <<<http://127.0.0.1:3000>>> on your local machine.
 
 ## Tech stack for Ticket Booking
 
